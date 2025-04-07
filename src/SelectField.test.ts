@@ -1,5 +1,6 @@
 import {describe, test, expect} from 'vitest'
 import {mount} from '@vue/test-utils'
+import {nextTick}  from 'vue'
 import Component from './SelectField.vue'
 
 describe('name', () => {
@@ -47,6 +48,70 @@ describe('name', () => {
     expect(hidden.attributes().value).toBeUndefined()
     await wrapper.vm.select({id: 1, name: 'abc'})
     expect(hidden.attributes().value).toEqual('1')
+  })
+
+})
+
+describe('autocomplete', () => {
+
+  test('force off', () => {
+    const wrapper = mount(Component, {
+      props: {
+        autocomplete: 'on',
+      }
+    })
+    const input = wrapper.find('input[type=text]')
+    expect(input.attributes().autocomplete).toEqual('off')
+  })
+
+})
+
+describe('input class', () => {
+
+  test('attribute', async () => {
+    const wrapper = mount(Component, {
+      props: {
+        modelValue: 'abc',
+      }
+    })
+    const input = wrapper.find('input[type=text]')
+    expect(input.attributes().class).toEqual('')
+
+    wrapper.setProps({'inputClass': 'foo bar'})
+    await nextTick()
+    expect(input.attributes().class).toEqual('foo bar')
+
+    wrapper.setProps({'inputClass': ['foo', 'baz']})
+    await nextTick()
+    expect(input.attributes().class).toEqual('foo baz')
+
+    wrapper.setProps({'inputClass': {foo: true, bar: false, hoge: true}})
+    await nextTick()
+    expect(input.attributes().class).toEqual('foo hoge')
+  })
+
+})
+
+describe('value', () => {
+
+  test('string', () => {
+    const wrapper = mount(Component, {
+      props: {
+        modelValue: 'foo',
+      },
+    })
+    expect(wrapper.vm.modelValue).toEqual('foo')
+    expect(wrapper.emitted().input).toBeUndefined()
+  })
+
+  test('object', () => {
+    const wrapper = mount(Component, {
+      props: {
+        modelValue: {id: 1, name: 'foo'},
+      },
+    })
+    expect(wrapper.vm.modelValue).toEqual({id: 1, name: 'foo'})
+    expect(wrapper.emitted().input).toBeUndefined()
   })
 
 })
