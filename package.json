@@ -1,0 +1,19 @@
+{
+  "name": "vue3-fields",
+  "version": "0.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kmdtmyk/vue3-fields.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kmdtmyk/vue3-fields/issues"
+  },
+  "homepage": "https://github.com/kmdtmyk/vue3-fields#readme",
+  "description": ""
+}
