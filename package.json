@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,12 @@
     "url": "https://github.com/kmdtmyk/vue3-fields/issues"
   },
   "homepage": "https://github.com/kmdtmyk/vue3-fields#readme",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.3",
+    "@vue/test-utils": "^2.4.6",
+    "jsdom": "^26.0.0",
+    "pug": "^3.0.3",
+    "vitest": "^3.1.1"
+  }
 }
