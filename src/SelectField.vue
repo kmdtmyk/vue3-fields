@@ -72,7 +72,6 @@ export default {
     },
     recordKey: {
       type: String,
-      required: true,
     },
     asyncWait: {
       type: [Number, Function],
