@@ -115,3 +115,27 @@ describe('value', () => {
   })
 
 })
+
+describe('disabled', () => {
+
+  test('true', () => {
+    const wrapper = mount(Component, {
+      props: {
+        disabled: true,
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    expect(input.attributes().disabled).toEqual('')
+  })
+
+  test('false', () => {
+    const wrapper = mount(Component, {
+      props: {
+        disabled: false,
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    expect(input.attributes().disabled).toBeUndefined()
+  })
+
+})
