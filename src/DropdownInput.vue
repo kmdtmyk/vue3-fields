@@ -203,13 +203,13 @@ input{
 
 .dropdown, .spinner, .clear{
   position-anchor: attr(data-anchor type(<custom-ident>));
-  position: absolute;
 }
 
 .dropdown{
   border: 1px solid #ced4da;
   box-sizing: border-box;
   background-color: white;
+  position: fixed;
   z-index: 9999;
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
   position-area: bottom span-right;
@@ -222,6 +222,7 @@ input{
 
 
 .spinner, .clear{
+  position: absolute;
   right: anchor(right);
   top: anchor(top);
   bottom: anchor(bottom);
