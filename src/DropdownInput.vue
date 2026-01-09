@@ -26,7 +26,6 @@ input(
   ref='dropdown'
 )
   slot
-slot(name='after')
 </template>
 
 <script>

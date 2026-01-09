@@ -35,8 +35,11 @@ dropdown-input(
       template(v-else) {{record}}
     template(v-slot:empty='' v-if='$slots.empty && inputValue !== ""')
       slot(name='empty')
-  template(v-slot:after='' v-if='$props.name != null')
-    input(:name='$props.name' :value='localValue' type='hidden')
+input(
+  v-if='$props.name != null'
+  type='hidden'
+  :name='$props.name' :value='localValue'
+)
 </template>
 
 <script>
