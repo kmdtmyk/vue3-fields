@@ -1,36 +1,38 @@
 <template lang='pug'>
-.dropdown-input
-  input(
-    ref='input'
-    v-model='inputValue'
-    v-bind='$attrs'
-    :class='inputClass'
-    :style='style'
-    :readonly='readonly'
-    :disabled='disabled'
-    @mousedown='_onMousedown'
-    @focus='_onFocus'
-    @blur='_onBlur'
-    @keydown.up='_onKeydownUp'
-    @keydown.down='_onKeydownDown'
-    @keydown.enter='_onKeydownEnter'
-    @keydown.esc='_onKeydownEsc'
-  )
-  .spinner(v-if='loading')
-    LoadingSpinner
-  .clear(v-else-if='clearable' @click='_clickClear')
-  .dropdown(
-    v-if='editable && dropdownOpen'
-    :style='dropdown.style'
-    ref='dropdown'
-  )
-    slot
-  slot(name='after')
+input(
+  ref='input'
+  v-model='inputValue'
+  v-bind='$attrs'
+  :class='inputClass'
+  :style='style'
+  :readonly='readonly'
+  :disabled='disabled'
+  @mousedown='_onMousedown'
+  @focus='_onFocus'
+  @blur='_onBlur'
+  @keydown.up='_onKeydownUp'
+  @keydown.down='_onKeydownDown'
+  @keydown.enter='_onKeydownEnter'
+  @keydown.esc='_onKeydownEsc'
+  :data-anchor='anchorName'
+)
+.spinner(v-if='loading' :data-anchor='anchorName')
+  LoadingSpinner
+.clear(v-else-if='clearable' @click='_clickClear' :data-anchor='anchorName')
+.dropdown(
+  v-if='editable && dropdownOpen'
+  :style='dropdown.style'
+  :data-anchor='anchorName'
+  ref='dropdown'
+)
+  slot
+slot(name='after')
 </template>
 
 <script>
 import CssString from './CssString'
 import LoadingSpinner from './LoadingSpinner.vue'
+import {v4 as uuid} from 'uuid'
 
 export default {
   inheritAttrs: false,
@@ -54,6 +56,7 @@ export default {
       dropdown: {
         style: {},
       },
+      anchorName: `--${uuid()}`,
     }
   },
   computed: {
@@ -159,59 +162,69 @@ export default {
       }
       const {fontSize} = getComputedStyle(input)
       const rect = input.getBoundingClientRect()
-      const left = `${rect.x}px`
-      const top = `${rect.height + rect.y}px`
-      const width = `${rect.width}px`
-      const style = {fontSize, width, left, top}
-      Object.assign(style, this.getDropdownStyle())
-      this.dropdown.style = style
+      this.dropdown.style = {
+        fontSize,
+        width: `${rect.width}px`,
+      }
+
     },
     _clickClear(){
       this.$emit('clear', null)
     },
-    getDropdownStyle(){
-      const {dropdownStyle} = this
-      if(dropdownStyle == null){
-        return {}
-      }
-      if(dropdownStyle instanceof Object){
-        return dropdownStyle
-      }
-      return CssString.parse(dropdownStyle)
-    }
+    // getDropdownStyle(){
+    //   const {dropdownStyle} = this
+    //   if(dropdownStyle == null){
+    //     return {}
+    //   }
+    //   if(dropdownStyle instanceof Object){
+    //     return dropdownStyle
+    //   }
+    //   return CssString.parse(dropdownStyle)
+    // }
   }
 }
 </script>
 
 <style scoped>
-.dropdown-input{
-  display: inline-flex;
-  position: relative;
+input{
+  anchor-name: attr(data-anchor type(<custom-ident>));
+
+  &:has(+ .clear){
+    &::placeholder{
+      color: inherit;
+      opacity: 0.7;
+    }
+    &:not(:focus)::placeholder{
+      opacity: 1;
+    }
+  }
+
 }
 
-input{
-  box-sizing: border-box;
-  width: 100% !important;
+.dropdown, .spinner, .clear{
+  position-anchor: attr(data-anchor type(<custom-ident>));
+  position: absolute;
 }
 
 .dropdown{
   border: 1px solid #ced4da;
   box-sizing: border-box;
   background-color: white;
-  position: fixed;
   z-index: 9999;
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+  position-area: bottom span-right;
+  position-try-fallbacks: bottom span-left, top span-right, top span-left;
 
   &:empty{
     display: none;
   }
 }
 
+
 .spinner, .clear{
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
+  right: anchor(right);
+  top: anchor(top);
+  bottom: anchor(bottom);
   display: flex;
   align-items: center;
   justify-content: center;

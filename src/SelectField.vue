@@ -87,7 +87,7 @@ export default {
     dropdownStyle: {
       type: [String, Object],
     },
-    style: String,
+    style: [String, Object],
     size: String,
     disabled: Boolean,
     title: String,
@@ -276,15 +276,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-:deep(input){
-  &::placeholder{
-    color: inherit;
-    opacity: 0.7;
-  }
-  &:not(:focus):not(.empty)::placeholder{
-    opacity: 1;
-  }
-}
-</style>
