@@ -2,13 +2,15 @@
 SelectField(
   :records='records'
 )
+  template(#empty)
+    i Not found
 </template>
 
 <script lang='ts' setup>
 import SelectField from '../src/SelectField.vue'
 
 const records = async () => {
-  await sleep(500)
+  await sleep(300)
   return ['a', 'b']
 }
 

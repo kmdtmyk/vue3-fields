@@ -1,6 +1,6 @@
 <template lang='pug'>
 .dropdown-list(
-  ref='dropdown'
+  ref='el'
   v-if='0 < records.length || $slots.empty != null'
   @mouseleave='selectedIndex = null'
 )
@@ -19,77 +19,67 @@
     slot(name='empty')
 </template>
 
-<script>
+<script lang='ts' setup>
+import {ref} from 'vue'
 import DropdownListItem from './DropdownListItem.vue'
 
-export default {
-  components: {
-    DropdownListItem,
-  },
-  props: {
-    records: {
-      type: Array,
-      default(){
-        return []
-      },
-    },
-  },
-  data(){
-    return {
-      selectedIndex: 0,
-    }
-  },
-  watch: {
-    records(newValue, oldValue){
-      if(newValue === oldValue){
-        return
-      }
-      this.selectedIndex = 0
-      this.autoScroll()
-    },
-  },
-  methods: {
-    up(){
-      const current = this.selectedIndex
-      const next = current - 1
-      const {length} = this.records
-      this.selectedIndex = (next + length) % length
-      this.autoScroll()
-    },
-    down(){
-      const current = this.selectedIndex
-      const next = current === null ? 0 : current + 1
-      const {length} = this.records
-      this.selectedIndex = (next + length) % length
-      this.autoScroll()
-    },
-    select(){
-      const record = this.records[this.selectedIndex]
-      if(record == null){
-        return false
-      }
-      this.$emit('input', record)
-      return true
-    },
-    autoScroll(){
-      const {dropdown} = this.$refs
-      if(dropdown == null || dropdown.children == null){
-        return
-      }
-      const selected = dropdown.children[this.selectedIndex]
-      if(selected == null){
-        return
-      }
-      const topOver = dropdown.scrollTop - selected.offsetTop
-      const bottomOver = selected.offsetTop + selected.offsetHeight - dropdown.scrollTop - dropdown.offsetHeight
-      if(0 < topOver){
-        dropdown.scrollTop = dropdown.scrollTop - topOver
-      }else if(0 < bottomOver){
-        dropdown.scrollTop = dropdown.scrollTop + bottomOver
-      }
-    },
-  },
+const {records} = defineProps<{
+  records: any[]
+}>()
+
+const selectedIndex = ref(0)
+
+const emits = defineEmits(['input'])
+
+const up = () => {
+  const current = selectedIndex.value
+  const next = current - 1
+  const {length} = records
+  selectedIndex.value = (next + length) % length
+  autoScroll()
 }
+
+const down = () => {
+  const current = selectedIndex.value
+  const next = current === null ? 0 : current + 1
+  const {length} = records
+  selectedIndex.value = (next + length) % length
+  autoScroll()
+}
+
+const select = () => {
+  const record = records[selectedIndex.value]
+  if(record == null){
+    return false
+  }
+  emits('input', record)
+  return true
+}
+
+const el = ref<HTMLElement>()
+
+const autoScroll = () => {
+  const dropdown = el.value
+  if(dropdown == null || dropdown.children == null){
+    return
+  }
+  const selected = dropdown.children[selectedIndex.value]
+  if(selected instanceof HTMLElement){
+    const topOver = dropdown.scrollTop - selected.offsetTop
+    const bottomOver = selected.offsetTop + selected.offsetHeight - dropdown.scrollTop - dropdown.offsetHeight
+    if(0 < topOver){
+      dropdown.scrollTop = dropdown.scrollTop - topOver
+    }else if(0 < bottomOver){
+      dropdown.scrollTop = dropdown.scrollTop + bottomOver
+    }
+  }
+}
+
+defineExpose({
+  up,
+  down,
+  select,
+})
 </script>
 
 <style scoped>
