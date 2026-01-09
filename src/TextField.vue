@@ -47,9 +47,6 @@ export default {
     },
     asyncWait: {
       type: [Number, Function],
-      default(){
-        return defaultAsyncWait
-      }
     },
   },
   data(){
