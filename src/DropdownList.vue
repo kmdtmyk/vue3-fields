@@ -4,7 +4,7 @@
   v-if='0 < records.length || $slots.empty != null'
   @mouseleave='selectedIndex = null'
 )
-  dropdown-list-item(
+  DropdownListItem(
     v-if='0 < records.length'
     v-for='(record, index) in records'
     :class='{selected: selectedIndex === index}'
@@ -15,7 +15,7 @@
   )
     slot(v-bind='{record}' v-if='$slots.default')
     template(v-else) {{record}}
-  dropdown-list-item.empty(v-if='$slots.empty != null && records.length === 0')
+  DropdownListItem.empty(v-if='$slots.empty != null && records.length === 0')
     slot(name='empty')
 </template>
 
