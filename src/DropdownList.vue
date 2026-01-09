@@ -65,13 +65,7 @@ const autoScroll = () => {
   }
   const selected = dropdown.children[selectedIndex.value]
   if(selected instanceof HTMLElement){
-    const topOver = dropdown.scrollTop - selected.offsetTop
-    const bottomOver = selected.offsetTop + selected.offsetHeight - dropdown.scrollTop - dropdown.offsetHeight
-    if(0 < topOver){
-      dropdown.scrollTop = dropdown.scrollTop - topOver
-    }else if(0 < bottomOver){
-      dropdown.scrollTop = dropdown.scrollTop + bottomOver
-    }
+    selected.scrollIntoView()
   }
 }
 

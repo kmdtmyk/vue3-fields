@@ -11,7 +11,7 @@ import SelectField from '../src/SelectField.vue'
 
 const records = async () => {
   await sleep(300)
-  return ['a', 'b']
+  return ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k']
 }
 
 const sleep = (time: number) => {
