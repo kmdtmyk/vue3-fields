@@ -139,3 +139,17 @@ describe('disabled', () => {
   })
 
 })
+
+describe('title', () => {
+
+  test('text', () => {
+    const wrapper = mount(Component, {
+      props: {
+        title: 'foo',
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    expect(input.attributes().title).toEqual('foo')
+  })
+
+})

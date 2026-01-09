@@ -13,6 +13,7 @@ dropdown-input(
   :style='style'
   :size='size'
   :disabled='disabled'
+  :title='title'
   @input.native='onInputNative'
   @keydown.up='onKeydownUp'
   @keydown.down='onKeydownDown'
@@ -89,6 +90,7 @@ export default {
     style: String,
     size: String,
     disabled: Boolean,
+    title: String,
   },
   data(){
     return {
