@@ -140,6 +140,32 @@ describe('disabled', () => {
 
 })
 
+describe('clear', () => {
+
+  test('not required', async () => {
+    const wrapper = mount(Component)
+    await nextTick()
+    expect(wrapper.find('.clear').exists()).toEqual(false)
+    wrapper.setProps({modelValue: 1})
+    await nextTick()
+    expect(wrapper.find('.clear').exists()).toEqual(true)
+  })
+
+  test('required', async () => {
+    const wrapper = mount(Component, {
+      props: {
+        required: true,
+      },
+    })
+    await nextTick()
+    expect(wrapper.find('.clear').exists()).toEqual(false)
+    wrapper.setProps({modelValue: 1})
+    await nextTick()
+    expect(wrapper.find('.clear').exists()).toEqual(false)
+  })
+
+})
+
 describe('title', () => {
 
   test('text', () => {

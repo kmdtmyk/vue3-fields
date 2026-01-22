@@ -5,7 +5,7 @@ dropdown-input(
   v-model='inputValue'
   :placeholder='placeholder'
   :required='required !== false && isEmpty === true'
-  :clear='isEmpty === false'
+  :clear='required === false && isEmpty === false'
   :dropdown-style='dropdownStyle'
   :class='class'
   :inputClass='[inputClass, {empty: isEmpty}]'
