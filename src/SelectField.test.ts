@@ -66,7 +66,7 @@ describe('autocomplete', () => {
 
 })
 
-describe('input class', () => {
+describe('class', () => {
 
   test('attribute', async () => {
     const wrapper = mount(Component, {
@@ -77,15 +77,15 @@ describe('input class', () => {
     const input = wrapper.find('input[type=text]')
     expect(input.attributes().class).toEqual('')
 
-    wrapper.setProps({'inputClass': 'foo bar'})
+    wrapper.setProps({'class': 'foo bar'})
     await nextTick()
     expect(input.attributes().class).toEqual('foo bar')
 
-    wrapper.setProps({'inputClass': ['foo', 'baz']})
+    wrapper.setProps({'class': ['foo', 'baz']})
     await nextTick()
     expect(input.attributes().class).toEqual('foo baz')
 
-    wrapper.setProps({'inputClass': {foo: true, bar: false, hoge: true}})
+    wrapper.setProps({'class': {foo: true, bar: false, hoge: true}})
     await nextTick()
     expect(input.attributes().class).toEqual('foo hoge')
   })
@@ -112,6 +112,30 @@ describe('value', () => {
     })
     expect(wrapper.vm.modelValue).toEqual({id: 1, name: 'foo'})
     expect(wrapper.emitted().input).toBeUndefined()
+  })
+
+})
+
+describe('readonly', () => {
+
+  test('true', () => {
+    const wrapper = mount(Component, {
+      props: {
+        readonly: true,
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    expect(input.attributes().readonly).toEqual('')
+  })
+
+  test('false', () => {
+    const wrapper = mount(Component, {
+      props: {
+        readonly: false,
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    expect(input.attributes().readonly).toBeUndefined()
   })
 
 })
@@ -176,6 +200,31 @@ describe('title', () => {
     })
     const input = wrapper.find('input[type=text]')
     expect(input.attributes().title).toEqual('foo')
+  })
+
+})
+
+describe('placeholder', () => {
+
+  test('not selected', () => {
+    const wrapper = mount(Component, {
+      props: {
+        placeholder: 'foo',
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    expect(input.attributes().placeholder).toEqual('foo')
+  })
+
+  test('selected', () => {
+    const wrapper = mount(Component, {
+      props: {
+        placeholder: 'foo',
+        modelValue: 'bar',
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    expect(input.attributes().placeholder).toEqual('bar')
   })
 
 })

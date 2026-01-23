@@ -3,7 +3,6 @@ input(
   ref='input'
   v-model='inputValue'
   v-bind='$attrs'
-  :class='inputClass'
   :style='style'
   :readonly='readonly'
   :disabled='disabled'
@@ -29,7 +28,6 @@ input(
 </template>
 
 <script>
-import CssString from './CssString'
 import LoadingSpinner from './LoadingSpinner.vue'
 import {v4 as uuid} from 'uuid'
 
@@ -42,7 +40,6 @@ export default {
     modelValue: [String],
     clear: Boolean,
     loading: Boolean,
-    inputClass: [String, Array, Object],
     readonly: [Boolean, String],
     disabled: [Boolean, String],
     dropdownStyle: [String, Object],

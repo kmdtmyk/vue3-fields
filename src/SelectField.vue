@@ -8,12 +8,8 @@ dropdown-input(
   :required='required !== false && isEmpty === true'
   :clear='required === false && isEmpty === false'
   :dropdown-style='dropdownStyle'
-  :class='class'
-  :inputClass='[inputClass, {empty: isEmpty}]'
+  :class='{empty: isEmpty}'
   :loading='loading || $attrs.loading'
-  :style='style'
-  :size='size'
-  :disabled='disabled'
   @input.native='onInputNative'
   @keydown.up='onKeydownUp'
   @keydown.down='onKeydownDown'
@@ -67,8 +63,6 @@ export default {
     },
     name: String,
     required: [Boolean, String],
-    class: {},
-    inputClass: [String, Array, Object],
     records: {
       type: [Array, Function],
       default(){
@@ -90,9 +84,6 @@ export default {
     dropdownStyle: {
       type: [String, Object],
     },
-    style: [String, Object],
-    size: String,
-    disabled: Boolean,
   },
   data(){
     return {

@@ -1,9 +1,9 @@
 <template lang='pug'>
 dropdown-input(
   ref='input'
-  type='text'
-  v-bind='$attrs'
   v-model='inputValue'
+  v-bind='$attrs'
+  type='text'
   :inputClass='inputClass'
   :autocomplete='autocompleteAttribute'
   :loading='loading || $attrs.loading'
