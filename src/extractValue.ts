@@ -1,6 +1,6 @@
 
 
-const extractValue = (name: string | undefined, value: any): Array<{name: string, value: any}> => {
+const extractValue = (name: string, value: any): Array<{name: string, value: any}> => {
   if(Array.isArray(value)){
     return value.flatMap((value, index) => {
       if(isObject(value)){
@@ -21,7 +21,7 @@ const extractValue = (name: string | undefined, value: any): Array<{name: string
   }
 }
 
-const joinNames = (...names: Array<string | undefined>): string => {
+const joinNames = (...names: Array<string>): string => {
   if(names[0] == null || names[0] === ''){
     names.shift()
   }

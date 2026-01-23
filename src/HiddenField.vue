@@ -18,7 +18,7 @@ const props = defineProps<{
 }>()
 
 const attributes = computed(() => {
-  return extractValue(props.name, props.value)
+  return extractValue(props.name ?? '', props.value)
 })
 
 const normalizeValue = (value: any) => {
