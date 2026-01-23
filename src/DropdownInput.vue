@@ -188,13 +188,14 @@ export default {
 input{
   anchor-name: attr(data-anchor type(<custom-ident>));
 
-  &:has(+ .clear){
+  &::placeholder{
+    color: inherit;
+    opacity: 1;
+  }
+
+  &:focus, &.empty{
     &::placeholder{
-      color: inherit;
-      opacity: 0.7;
-    }
-    &:not(:focus)::placeholder{
-      opacity: 1;
+      opacity: 0.6;
     }
   }
 
