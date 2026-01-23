@@ -76,6 +76,20 @@ test('null', () => {
   expect(inputs[0].attributes('value')).toEqual('')
 })
 
+test('undefined', () => {
+  const wrapper = mount(Component, {
+    props: {
+      value: {
+        foo: undefined,
+      },
+    },
+  })
+  const inputs = wrapper.findAll('input[type="hidden"]')
+  expect(inputs.length).toEqual(1)
+  expect(inputs[0].attributes('name')).toEqual('foo')
+  expect(inputs[0].attributes('value')).toEqual('')
+})
+
 test('object + name', () => {
   const wrapper = mount(Component, {
     props: {

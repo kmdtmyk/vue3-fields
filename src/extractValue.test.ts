@@ -8,6 +8,7 @@ test('basic', () => {
   expect(extractValue('', true)).toEqual([{name: '', value: true}])
   expect(extractValue('', false)).toEqual([{name: '', value: false}])
   expect(extractValue('', null)).toEqual([{name: '', value: null}])
+  expect(extractValue('', undefined)).toEqual([{name: '', value: undefined}])
   expect(extractValue('foo', [1, 2])).toEqual([
     {name: 'foo[]', value: 1},
     {name: 'foo[]', value: 2},
