@@ -4,12 +4,13 @@ input(
   v-for='attribute in attributes'
   type='hidden'
   :name='attribute.name'
-  :value='attribute.value'
+  :value='normalizeValue(attribute.value)'
 )
 </template>
 
 <script lang='ts' setup>
 import {computed} from 'vue'
+import extractValue from './extractValue'
 
 const props = defineProps<{
   name?: string
@@ -17,26 +18,8 @@ const props = defineProps<{
 }>()
 
 const attributes = computed(() => {
-  return extract(props.name, props.value)
+  return extractValue(props.name, props.value)
 })
-
-const extract = (name: string | undefined, value: any) => {
-  return Object.entries(value).flatMap(([key, value]) => {
-    if(Array.isArray(value)){
-      return value.map((value) => {
-        return {
-          name: joinNames(name, key, ''),
-          value: normalizeValue(value),
-        }
-      })
-    }else{
-      return {
-        name: joinNames(name, key),
-        value: normalizeValue(value),
-      }
-    }
-  })
-}
 
 const normalizeValue = (value: any) => {
   if(value == null){
@@ -44,18 +27,4 @@ const normalizeValue = (value: any) => {
   }
   return value
 }
-
-const joinNames = (...names: Array<string | undefined>): string => {
-  return [...names]
-    .filter(name => name != null)
-    .map((name, index) => {
-      if(index === 0){
-        return name
-      }else{
-        return `[${name}]`
-      }
-    }).join('')
-}
-
-// console.log(attributes.value)
 </script>
