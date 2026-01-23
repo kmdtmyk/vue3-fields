@@ -1,8 +1,9 @@
 <template lang='pug'>
 dropdown-input(
+  v-model='inputValue'
+  v-bind='$attrs'
   type='text'
   autocomplete='off'
-  v-model='inputValue'
   :placeholder='placeholder'
   :required='required !== false && isEmpty === true'
   :clear='required === false && isEmpty === false'
@@ -13,7 +14,6 @@ dropdown-input(
   :style='style'
   :size='size'
   :disabled='disabled'
-  :title='title'
   @input.native='onInputNative'
   @keydown.up='onKeydownUp'
   @keydown.down='onKeydownDown'
@@ -93,7 +93,6 @@ export default {
     style: [String, Object],
     size: String,
     disabled: Boolean,
-    title: String,
   },
   data(){
     return {
