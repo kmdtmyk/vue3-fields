@@ -17,5 +17,17 @@ test('basic', () => {
 test('object', () => {
   expect(extractValue('', {id: 1})).toEqual([{name: 'id', value: 1}])
   expect(extractValue('foo', {id: 1})).toEqual([{name: 'foo[id]', value: 1}])
+
+  expect(extractValue('foo', {ids: [1, 2]})).toEqual([
+    {name: 'foo[ids][]', value: 1},
+    {name: 'foo[ids][]', value: 2},
+  ])
+  expect(extractValue('foo', {detail: {id: 1}})).toEqual([
+    {name: 'foo[detail][id]', value: 1},
+  ])
+  expect(extractValue('foo', {details: [{id: 1}]})).toEqual([
+    {name: 'foo[details][][id]', value: 1},
+  ])
+
 })
 

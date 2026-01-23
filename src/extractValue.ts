@@ -4,27 +4,12 @@
 const extractValue = (name: string | undefined, value: any): Array<{name: string, value: any}> => {
 
   if(Array.isArray(value)){
-    return value.map((value) => {
-      return {
-        name: joinNames(name, ''),
-        value: value,
-      }
+    return value.flatMap((value) => {
+      return extractValue(joinNames(name, ''), value)
     })
   }else if(value != null && typeof value === 'object'){
     return Object.entries(value).flatMap(([key, value]) => {
-      if(Array.isArray(value)){
-        return value.map((value) => {
-          return {
-            name: joinNames(name, key, ''),
-            value: value,
-          }
-        })
-      }else{
-        return {
-          name: joinNames(name, key),
-          value: value,
-        }
-      }
+      return extractValue(joinNames(name, key), value)
     })
   }else{
     return [{
