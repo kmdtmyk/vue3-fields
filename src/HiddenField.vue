@@ -2,6 +2,7 @@
 <template lang='pug'>
 input(
   v-for='attribute in attributes'
+  v-bind='$attrs'
   type='hidden'
   :name='attribute.name'
   :value='normalizeValue(attribute.value)'
@@ -27,4 +28,8 @@ const normalizeValue = (value: any) => {
   }
   return value
 }
+
+defineOptions({
+  inheritAttrs: false,
+})
 </script>

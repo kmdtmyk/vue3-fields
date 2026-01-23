@@ -104,3 +104,34 @@ test('object + name', () => {
   expect(inputs[0].attributes('name')).toEqual('foo[id]')
   expect(inputs[0].attributes('value')).toEqual('1')
 })
+
+describe('attribute' , () => {
+
+  test('force type hidden', () => {
+    const wrapper = mount(Component, {
+      props: {
+        value: {
+          id: 1,
+        },
+        type:'text'
+      },
+    })
+    const inputs = wrapper.findAll('input[type="hidden"]')
+    expect(inputs.length).toEqual(1)
+  })
+
+  test('disabled', () => {
+    const wrapper = mount(Component, {
+      props: {
+        value: {
+          id: 1,
+        },
+        disabled: true,
+      },
+    })
+    const inputs = wrapper.findAll('input[type="hidden"]')
+    expect(inputs[0].attributes('disabled')).toEqual('')
+  })
+
+})
+
