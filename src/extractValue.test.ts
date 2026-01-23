@@ -26,7 +26,7 @@ test('object', () => {
     {name: 'foo[detail][id]', value: 1},
   ])
   expect(extractValue('foo', {details: [{id: 1}]})).toEqual([
-    {name: 'foo[details][][id]', value: 1},
+    {name: 'foo[details][0][id]', value: 1},
   ])
 
 })
