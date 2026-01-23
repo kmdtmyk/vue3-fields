@@ -3,7 +3,7 @@
 input(
   v-for='attribute in attributes'
   type='hidden'
-  :name='joinNames(props.name, attribute.name)'
+  :name='attribute.name'
   :value='attribute.value'
 )
 </template>
@@ -17,13 +17,26 @@ const props = defineProps<{
 }>()
 
 const attributes = computed(() => {
-  return Object.keys(props.value).map(key => {
-    return {
-      name: key,
-      value: normalizeValue(props.value[key]),
+  return extract(props.name, props.value)
+})
+
+const extract = (name: string | undefined, value: any) => {
+  return Object.entries(value).flatMap(([key, value]) => {
+    if(Array.isArray(value)){
+      return value.map((value) => {
+        return {
+          name: joinNames(name, key, ''),
+          value: normalizeValue(value),
+        }
+      })
+    }else{
+      return {
+        name: joinNames(name, key),
+        value: normalizeValue(value),
+      }
     }
   })
-})
+}
 
 const normalizeValue = (value: any) => {
   if(value == null){
@@ -32,7 +45,7 @@ const normalizeValue = (value: any) => {
   return value
 }
 
-const joinNames = (...names: string[]): string => {
+const joinNames = (...names: Array<string | undefined>): string => {
   return [...names]
     .filter(name => name != null)
     .map((name, index) => {
@@ -43,4 +56,6 @@ const joinNames = (...names: string[]): string => {
       }
     }).join('')
 }
+
+// console.log(attributes.value)
 </script>

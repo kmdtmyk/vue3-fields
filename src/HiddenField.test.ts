@@ -48,6 +48,20 @@ test('boolean', () => {
   expect(inputs[1].attributes('value')).toEqual('false')
 })
 
+test('array', () => {
+  const wrapper = mount(Component, {
+    props: {
+      value: {
+        array: [1, 2, 3],
+      },
+    },
+  })
+  const inputs = wrapper.findAll('input[type="hidden"]')
+  expect(inputs.length).toEqual(3)
+  expect(inputs[0].attributes('name')).toEqual('array[]')
+  expect(inputs[0].attributes('value')).toEqual('1')
+})
+
 test('null', () => {
   const wrapper = mount(Component, {
     props: {
