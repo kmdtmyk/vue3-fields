@@ -13,6 +13,8 @@ const extractValue = (name: string, value: any): Array<{name: string, value: any
     return Object.entries(value).flatMap(([key, value]) => {
       return extractValue(joinNames(name, key), value)
     })
+  }else if(typeof value === 'function'){
+    return []
   }else{
     return [{
       name: joinNames(name),
