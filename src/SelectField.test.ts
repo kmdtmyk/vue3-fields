@@ -240,7 +240,6 @@ describe('onUpdate:modelValue', () => {
     })
     const input = wrapper.find('input[type=text]')
     await input.setValue('foo')
-    console.log(wrapper.props())
     expect(wrapper.props().modelValue).toEqual(null)
   })
 
