@@ -228,3 +228,20 @@ describe('placeholder', () => {
   })
 
 })
+
+describe('onUpdate:modelValue', () => {
+
+  test('does not updated by input set value', async () => {
+    const wrapper = mount(Component, {
+      props: {
+        modelValue: null,
+        'onUpdate:modelValue': (e: any) => wrapper.setProps({modelValue: e})
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    await input.setValue('foo')
+    console.log(wrapper.props())
+    expect(wrapper.props().modelValue).toEqual(null)
+  })
+
+})

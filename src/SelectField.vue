@@ -56,7 +56,7 @@ export default {
   },
   props: {
     modelValue: {
-      type: [Number, String, Object],
+      type: [Number, String, Object, null],
       default(){
         return null
       },
