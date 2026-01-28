@@ -84,6 +84,9 @@ export default {
     dropdownStyle: {
       type: [String, Object],
     },
+    'onUpdate:modelValue': {
+      type: Function,
+    },
   },
   data(){
     return {
