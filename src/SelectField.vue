@@ -74,9 +74,6 @@ export default {
     },
     asyncWait: {
       type: [Number, Function],
-      default(){
-        return defaultAsyncWait
-      },
     },
     record: {
       type: Object,
@@ -193,11 +190,12 @@ export default {
       }
     },
     callAsyncRecords(){
+      const asyncWait = this.asyncWait ?? defaultAsyncWait
       let wait
-      if(this.asyncWait instanceof Function){
-        wait = this.asyncWait(this.inputValue)
+      if(asyncWait instanceof Function){
+        wait = asyncWait(this.inputValue)
       }else{
-        wait = this.asyncWait
+        wait = asyncWait
       }
       this.asyncRecordsFunction.call({
         wait,
