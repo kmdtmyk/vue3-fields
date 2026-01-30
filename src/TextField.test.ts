@@ -20,3 +20,13 @@ describe('autocomplete', () => {
   })
 
 })
+
+test('class', () => {
+  const wrapper = mount(Component, {
+    props: {
+      class: 'foo',
+    }
+  })
+  const input = wrapper.find('input[type=text]')
+  expect(input.attributes().class).toEqual('foo')
+})

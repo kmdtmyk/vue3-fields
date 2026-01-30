@@ -4,7 +4,6 @@ dropdown-input(
   v-model='inputValue'
   v-bind='$attrs'
   type='text'
-  :inputClass='inputClass'
   :autocomplete='autocompleteAttribute'
   :loading='loading || $attrs.loading'
   @input.native='onInputNative'
@@ -38,7 +37,6 @@ export default {
   },
   props: {
     modelValue: String,
-    inputClass: [String, Array, Object],
     autocomplete: {
       type: [String, Boolean, Array, Function],
       default(){
