@@ -1,5 +1,5 @@
 <template lang='pug'>
-dropdown-input(
+DropdownInput(
   ref='input'
   v-model='inputValue'
   v-bind='$attrs'
@@ -12,7 +12,7 @@ dropdown-input(
   @keydown.enter='onKeydownEnter'
   @focus='onFocus'
 )
-  dropdown-list(
+  DropdownList(
     ref='dropdown'
     v-if='useDropdown'
     :records='dropdownRecords'
