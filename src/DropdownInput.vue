@@ -3,182 +3,120 @@ input(
   ref='input'
   v-model='inputValue'
   v-bind='$attrs'
-  :style='style'
   :readonly='readonly'
   :disabled='disabled'
-  @mousedown='_onMousedown'
-  @focus='_onFocus'
-  @blur='_onBlur'
-  @keydown.up='_onKeydownUp'
-  @keydown.down='_onKeydownDown'
-  @keydown.enter='_onKeydownEnter'
-  @keydown.esc='_onKeydownEsc'
+  @mousedown='dropdownOpen = true'
+  @focus='dropdownOpen = true'
+  @blur='dropdownOpen = false'
+  @keydown.up='dropdownOpen = true'
+  @keydown.down='dropdownOpen = true'
+  @keydown.enter='dropdownOpen = false'
+  @keydown.esc='onKeydownEsc'
   :data-anchor='anchorName'
 )
 .spinner(v-if='loading' :data-anchor='anchorName')
   LoadingSpinner
-.clear(v-else-if='clearable' @click='_clickClear' :data-anchor='anchorName')
+.clear(v-else-if='clearable' @click='clickClear' :data-anchor='anchorName')
 .dropdown(
   v-if='editable && dropdownOpen'
-  :style='dropdown.style'
+  :style='dropdownStyle'
   :data-anchor='anchorName'
-  ref='dropdown'
 )
   slot
 </template>
 
-<script>
+<script lang='ts' setup>
+import {computed, ref, watch} from 'vue'
 import LoadingSpinner from './LoadingSpinner.vue'
 import {v4 as uuid} from 'uuid'
 
-export default {
+defineOptions({
   inheritAttrs: false,
-  components: {
-    LoadingSpinner,
-  },
-  props: {
-    modelValue: [String],
-    clear: Boolean,
-    loading: Boolean,
-    readonly: [Boolean, String],
-    disabled: [Boolean, String],
-    dropdownStyle: [String, Object],
-  },
-  data(){
-    return {
-      isMounted: false,
-      dropdownOpen: false,
-      inputValue: this.modelValue,
-      dropdown: {
-        style: {},
-      },
-      anchorName: `--${uuid()}`,
-    }
-  },
-  computed: {
-    listeners(){
-      return {
-        ...this.$listeners,
-        input: (e) => {
-          this.$emit('input', e.target.modelValue)
-          this.dropdownOpen = true
-        },
-      }
-    },
-    editable(){
-      if(this.isMounted === false){
-        return false
-      }
-      if(this.readonly !== false || this.disabled !== false){
-        return false
-      }
-      return true
-    },
-    clearable(){
-      if(!this.editable){
-        return false
-      }
-      if(this.$props.clear !== null){
-        return this.$props.clear
-      }
-      return !!this.modelValue
-    },
-    style(){
-      return
-      // if(!this.clearable){
-      //   return this.wrapperStyle
-      // }
-      // const input = this.$refs.input
-      // const style = getComputedStyle(input)
-      // return `marginRight: calc(-2em + ${style.paddingRight});` +
-      //   'paddingRight: 2em;'
-    },
-  },
-  mounted(){
-    this.isMounted = true
-  },
-  watch: {
-    modelValue(){
-      this.inputValue = this.modelValue
-    },
-    dropdownOpen(){
-      // スクロール、リサイズ時にドロップダウンを閉じるようにする
-      // (selectタグと同じ挙動)
-      if(this.dropdownOpen){
-        this._updateDropdownStyle()
-        addEventListener('scroll', this._onWindowScroll)
-        addEventListener('resize', this._onWindowResize)
-      }else{
-        removeEventListener('scroll', this._onWindowScroll)
-        removeEventListener('resize', this._onWindowResize)
-      }
-    },
-  },
-  methods: {
-    focus(){
-      this.$refs.input.focus()
-    },
-    _onMousedown(e){
-      this.dropdownOpen = true
-    },
-    _onFocus(e){
-      this.dropdownOpen = true
-    },
-    _onBlur(e){
-      this.dropdownOpen = false
-    },
-    _onKeydownUp(e){
-      this.dropdownOpen = true
-    },
-    _onKeydownDown(e){
-      this.dropdownOpen = true
-    },
-    _onKeydownEnter(e){
-      this.dropdownOpen = false
-    },
-    _onKeydownEsc(e){
-      if(this.dropdownOpen === true){
-        this.dropdownOpen = false
-        e.preventDefault()
-      }
-    },
-    _onParentScroll(e){
-      this.dropdownOpen = false
-    },
-    _onWindowScroll(e){
-      this.dropdownOpen = false
-    },
-    _onWindowResize(e){
-      this.dropdownOpen = false
-    },
-    _updateDropdownStyle(){
-      const {input} = this.$refs
-      if(input == null){
-        return
-      }
-      const {fontSize} = getComputedStyle(input)
-      const rect = input.getBoundingClientRect()
-      this.dropdown.style = {
-        fontSize,
-        width: `${rect.width}px`,
-      }
+})
 
-    },
-    _clickClear(){
-      this.$emit('clear', null)
-    },
-    // getDropdownStyle(){
-    //   const {dropdownStyle} = this
-    //   if(dropdownStyle == null){
-    //     return {}
-    //   }
-    //   if(dropdownStyle instanceof Object){
-    //     return dropdownStyle
-    //   }
-    //   return CssString.parse(dropdownStyle)
-    // }
+const modelValue = defineModel()
+
+const {clear, loading, readonly, disabled} = defineProps<{
+  clear?: boolean
+  loading?: boolean
+  readonly?: boolean
+  disabled?: boolean
+}>()
+
+const dropdownOpen = ref(false)
+const inputValue = ref(modelValue)
+const dropdownStyle = ref({})
+const anchorName = `--${uuid()}`
+
+const editable = computed(() => {
+  if(readonly || disabled){
+    return false
+  }
+  return true
+})
+
+const clearable = computed(() => {
+  if(!editable){
+    return false
+  }
+  if(clear != null){
+    return clear
+  }
+  return modelValue != null
+})
+
+watch(() => modelValue.value, () => {
+  inputValue.value = modelValue.value
+})
+
+watch(() => dropdownOpen.value, () => {
+  // スクロール、リサイズ時にドロップダウンを閉じるようにする
+  // (selectタグと同じ挙動)
+  if(dropdownOpen.value){
+    updateDropdownStyle()
+    addEventListener('scroll', onWindowScroll)
+    addEventListener('resize', onWindowResize)
+  }else{
+    removeEventListener('scroll', onWindowScroll)
+    removeEventListener('resize', onWindowResize)
+  }
+})
+
+const input = ref<HTMLInputElement>()
+
+const updateDropdownStyle = () => {
+  if(input.value == null){
+    return
+  }
+  const {fontSize} = getComputedStyle(input.value)
+  const rect = input.value.getBoundingClientRect()
+  dropdownStyle.value = {
+    fontSize,
+    width: `${rect.width}px`,
   }
 }
+
+const onWindowScroll = (e: Event) => {
+  dropdownOpen.value = false
+}
+
+const onWindowResize = (e: Event) => {
+  dropdownOpen.value = false
+}
+
+const onKeydownEsc = (e: Event) => {
+  if(dropdownOpen.value === true){
+    dropdownOpen.value = false
+    e.preventDefault()
+  }
+}
+
+const emits = defineEmits(['clear'])
+
+const clickClear = (e: Event) => {
+  emits('clear', null)
+}
+
 </script>
 
 <style scoped>
