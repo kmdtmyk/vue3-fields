@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/kmdtmyk/vue3-fields#readme",
   "description": "",
+  "files": [
+    "src/"
+  ],
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.3",
     "@vue/test-utils": "^2.4.6",
