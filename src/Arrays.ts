@@ -2,7 +2,7 @@ import Strings from './Strings'
 
 export default class{
 
-  static from(arrayLike){
+  static from(arrayLike: any): Array<any>{
     if(Array.isArray(arrayLike)){
       return arrayLike
     }
@@ -14,14 +14,14 @@ export default class{
     return []
   }
 
-  static isNullOrEmpty(array){
+  static isNullOrEmpty(array: Array<any> | null | undefined): boolean{
     if(array == null){
       return true
     }
     return array.length === 0
   }
 
-  static search(array, query){
+  static search(array: Array<string | Object>, query: string){
     if(Strings.isEmpty(query)){
       return array
     }
