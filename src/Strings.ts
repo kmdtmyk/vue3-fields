@@ -1,7 +1,10 @@
 export default class{
 
-  static includes(text, value, options = {}){
+  static includes(text: string, value: string | null | undefined, options: {ignoreCase?: boolean} = {}){
     if(this.isEmpty(text) || this.isEmpty(value)){
+      return false
+    }
+    if(value == null){
       return false
     }
     if(options.ignoreCase === true){
@@ -11,7 +14,7 @@ export default class{
     }
   }
 
-  static isBlank(value){
+  static isBlank(value: string | null | undefined): boolean{
     if(value == null){
       return true
     }
@@ -19,11 +22,11 @@ export default class{
     return /^\s*$/.test(value)
   }
 
-  static isNotBlank(value){
+  static isNotBlank(value: string | null | undefined): boolean{
     return this.isBlank(value) === false
   }
 
-  static isEmpty(value){
+  static isEmpty(value: string | null | undefined): boolean{
     if(value == null){
       return true
     }
@@ -31,18 +34,8 @@ export default class{
     return value === ''
   }
 
-  static isNotEmpty(value){
+  static isNotEmpty(value: string | null | undefined): boolean{
     return this.isEmpty(value) === false
-  }
-
-  static toUpperCaseFirst(value){
-    if(value == null){
-      return value
-    }
-    if(value === ''){
-      return ''
-    }
-    return value[0].toUpperCase() + value.substr(1)
   }
 
 }
