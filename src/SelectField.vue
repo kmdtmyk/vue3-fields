@@ -1,13 +1,13 @@
 <template lang='pug'>
-dropdown-input(
+DropdownInput(
   v-model='inputValue'
   v-bind='$attrs'
   type='text'
   autocomplete='off'
   :placeholder='placeholder'
-  :required='required !== false && isEmpty === true'
-  :clear='required === false && isEmpty === false'
-  :dropdown-style='dropdownStyle'
+  :required='props.required !== false && isEmpty === true'
+  :clear='props.required === false && isEmpty === false'
+  :dropdown-style='props.dropdownStyle'
   :class='{empty: isEmpty}'
   :loading='loading || $attrs.loading'
   @input.native='onInputNative'
@@ -19,7 +19,7 @@ dropdown-input(
   @blur='onBlur'
   @clear='clear'
 )
-  dropdown-list(
+  DropdownList(
     ref='dropdown'
     v-if='dropdownRecords != null'
     :records='dropdownRecords'
@@ -38,7 +38,8 @@ input(
 )
 </template>
 
-<script>
+<script lang='ts' setup>
+import {computed, nextTick, ref, useAttrs, useSlots, watch} from 'vue'
 import DropdownInput from './DropdownInput.vue'
 import DropdownList from './DropdownList.vue'
 import Arrays from './Arrays'
@@ -48,225 +49,228 @@ import VueProps from './VueProps'
 import DebounceFunction from './DebounceFunction'
 import defaultAsyncWait from './defaultAsyncWait'
 
-export default {
+
+defineOptions({
   inheritAttrs: false,
-  components: {
-    DropdownList,
-    DropdownInput,
-  },
-  props: {
-    modelValue: {
-      type: [Number, String, Object, null],
-      default(){
-        return null
-      },
-    },
-    name: String,
-    required: [Boolean, String],
-    records: {
-      type: [Array, Function],
-      default(){
-        return []
-      },
-    },
-    recordKey: {
-      type: String,
-    },
-    asyncWait: {
-      type: [Number, Function],
-    },
-    record: {
-      type: Object,
-    },
-    dropdownStyle: {
-      type: [String, Object],
-    },
-    'onUpdate:modelValue': {
-      type: Function,
-    },
-  },
-  data(){
-    return {
-      loading: false,
-      asyncRecords: null,
-      localValue: null,
-      inputValue: '',
-      selectedRecord: null,
+})
+
+const modelValue = defineModel()
+
+const props = defineProps<{
+  name?: string
+  required?: boolean | string
+  records?: Array<Object> | Function
+  record?: Object
+  recordKey?: string
+  asyncWait?: number | Function
+  dropdownStyle?: string | Object
+  placeholder?: string
+}>()
+
+const emits = defineEmits([
+  'update:record',
+  'update:modelValue',
+  'input',
+])
+
+const loading = ref<boolean>(false)
+const asyncRecords = ref<Array<any> | null>(null)
+const localValue = ref<any>(null)
+const inputValue = ref<string>('')
+const selectedRecord = ref<any>(null)
+
+
+watch(modelValue, (value) => {
+  localValue.value = value
+  const {recordKey} = props
+
+  // if(recordKey != null && isAsync.value === false){
+  if(recordKey != null){
+    if(value == null){
+      selectedRecord.value = null
+      return
     }
-  },
-  watch: {
-    modelValue: {
-      handler(value){
-        this.localValue = value
-        const {recordKey} = this
+    selectedRecord.value = Arrays.from(props.records).find(record => {
+      return record[recordKey] === value
+    })
+  }
+},  {immediate: true})
 
-        if(recordKey != null && this.isAsync === false){
-          if(value == null){
-            this.selectedRecord = null
-            return
-          }
-          this.selectedRecord = Arrays.from(this.records).find(record => {
-            return record[recordKey] === value
-          })
-        }
+watch(() => props.record, (value) => {
+  if(props.recordKey != null && value !== undefined){
+    selectedRecord.value = value
+  }
+}, {immediate: true})
 
-      },
-      immediate: true,
-    },
-    record: {
-      handler(record){
-        if(this.recordKey != null && record !== undefined){
-          this.selectedRecord = record
+watch(() => props.records, (value) => {
+  if(isAsync.value === true){
+    asyncRecords.value = null
+  }
+})
+
+const dropdownRecords = computed(() => {
+  if(isAsync.value === true){
+    return asyncRecords.value
+  }else if(props.records instanceof Function){
+    return props.records(inputValue)
+  }else if(Array.isArray(props.records)){
+    return Arrays.search(props.records, inputValue.value)
+  }
+  return null
+})
+
+const placeholder = computed(() => {
+  if(selectedRecord.value != null){
+    return recordText(selectedRecord.value)
+  }
+  if(Strings.isNotEmpty(localValue.value)){
+    return localValue.value
+  }
+  return props.placeholder
+})
+
+const isEmpty = computed(() => {
+  return Strings.isEmpty(localValue.value)
+})
+
+const asyncRecordsFunction = computed(() => {
+  let lastAsyncRecordsTime = 0
+  return new DebounceFunction((query: any) => {
+    const startTime = Date.now()
+    if(props.records instanceof Function === false){
+      return
+    }
+    props.records(query).then(
+      (data: any) => {
+        if(startTime < lastAsyncRecordsTime){
+          return
         }
+        lastAsyncRecordsTime = startTime
+        asyncRecords.value = data
+        loading.value = false
       },
-      immediate: true,
-    },
-    records(value){
-      if(this.isAsync){
-        this.asyncRecords = null
+      (error: any) => {
+        loading.value = false
       }
-    },
-  },
-  computed: {
-    dropdownRecords(){
-      if(this.isAsync){
-        return this.asyncRecords
-      }else if(this.records instanceof Function){
-        return this.records(this.inputValue)
-      }else if(Array.isArray(this.records)){
-        return Arrays.search(this.records, this.inputValue)
-      }
-      return null
-    },
-    placeholder(){
-      if(this.selectedRecord){
-        return this.recordText(this.selectedRecord)
-      }
-      if(Strings.isNotEmpty(this.localValue)){
-        return this.localValue
-      }
-      return this.$attrs.placeholder
-    },
-    isEmpty(){
-      return Strings.isEmpty(this.localValue)
-    },
-    asyncRecordsFunction(){
-      return new DebounceFunction((query) => {
-        const startTime = Date.now()
-        this.records(query).then(
-          (data) => {
-            if(startTime < this.lastAsyncRecordsTime){
-              return
-            }
-            this.lastAsyncRecordsTime = startTime
-            this.asyncRecords = data
-            this.loading = false
-          },
-          (error) => {
-            this.loading = false
-          }
-        )
-      })
-    },
-    isAsync(){
-      if(this.asyncWait != null){
-        return true
-      }
-      return VueProps.isAsyncFunction(this.records)
-    },
-  },
-  methods: {
-    onFocus(e){
-      if(VueAttrs.readonly(this.$attrs)){
-        // TODO: test code
-        this.inputValue = this.placeholder
-      }else if(this.isAsync === true && Arrays.isNullOrEmpty(this.asyncRecords)){
-        this.callAsyncRecords()
-      }
-    },
-    onInputNative(e){
-      if(this.isAsync === true){
-        this.callAsyncRecords()
-      }
-    },
-    callAsyncRecords(){
-      const asyncWait = this.asyncWait ?? defaultAsyncWait
-      let wait
-      if(asyncWait instanceof Function){
-        wait = asyncWait(this.inputValue)
-      }else{
-        wait = asyncWait
-      }
-      this.asyncRecordsFunction.call({
-        wait,
-        arguments: [this.inputValue],
-      })
-      this.loading = true
-    },
-    onKeydownUp(e){
-      this.$nextTick(() => {
-        this.$refs.dropdown.up()
-      })
-    },
-    onKeydownDown(e){
-      if(this.$refs.dropdown){
-        this.$refs.dropdown.down()
-      }
-    },
-    onKeydownEnter(e){
-      const {dropdown} = this.$refs
-      if(dropdown == null){
-        return
-      }
-      if(dropdown.select() === true){
-        e.preventDefault()
-      }
-    },
-    onKeydownDelete(e){
-      if(e.target.value === '' && this.modelValue != null){
-        this.clear()
-      }
-    },
-    onBlur(e){
-      this.inputValue = ''
-    },
-    clear(){
-      this.selectedRecord = null
-      this.inputValue = null
-      this.localValue = null
-      this.$emit('update:record', null)
-      this.$emit('update:modelValue', null)
-      this.$emit('input', this.localValue)
-    },
-    select(record){
-      if(record instanceof Object){
-        this.selectedRecord = record
-      }
-      this.inputValue = this.recordText(record)
-      const {recordKey} = this
-      if(recordKey != null){
-        this.selectedRecord = record
-        this.$emit('update:record', record)
-        this.$emit('update:modelValue', record[recordKey])
-        this.localValue = record[recordKey]
-      }else{
-        this.$emit('update:modelValue', record)
-        this.localValue = record
-      }
-      this.$emit('input', this.localValue)
-    },
-    recordText(record){
-      if(record == null){
-        return ''
-      }
-      const slot = this.$slots.default
-      if(slot != null){
-        const vnode = slot({record})
-        const text = vnode[0].text || vnode[0].children
-        return text.trim()
-      }
-      return record.toString()
-    },
+    )
+  })
+})
+
+const isAsync = computed(() => {
+  if(props.asyncWait != null){
+    return true
+  }
+  return VueProps.isAsyncFunction(props.records)
+})
+
+const attrs = useAttrs()
+
+const onFocus = (e: Event) => {
+  if(VueAttrs.readonly(attrs)){
+    // TODO: test code
+    inputValue.value = placeholder.value
+  }else if(isAsync.value === true && Arrays.isNullOrEmpty(asyncRecords.value)){
+    callAsyncRecords()
   }
 }
+
+const onInputNative = (e: Event) => {
+  if(isAsync.value === true){
+    callAsyncRecords()
+  }
+}
+
+const callAsyncRecords = () => {
+  const _asyncWait = props.asyncWait ?? defaultAsyncWait
+  let wait
+  if(_asyncWait instanceof Function){
+    wait = _asyncWait(inputValue.value)
+  }else{
+    wait = _asyncWait
+  }
+  asyncRecordsFunction.value.call({
+    wait,
+    arguments: [inputValue.value],
+  })
+  loading.value = true
+}
+
+const dropdown = ref()
+
+const onKeydownUp = async (e: Event) => {
+  await nextTick()
+  dropdown.value.up()
+}
+
+const onKeydownDown = (e: Event) => {
+  if(dropdown.value){
+    dropdown.value.down()
+  }
+}
+
+const onKeydownEnter = (e: Event) => {
+  if(dropdown.value == null){
+    return
+  }
+  if(dropdown.value.select() === true){
+    e.preventDefault()
+  }
+}
+
+const onKeydownDelete = (e: Event) => {
+  const target = e.target as HTMLInputElement
+  if(target != null && target.value === '' && modelValue.value != null){
+    clear()
+  }
+}
+
+const onBlur = (e: Event) => {
+  inputValue.value = ''
+}
+
+const clear = () => {
+  selectedRecord.value = null
+  inputValue.value = ''
+  localValue.value = null
+  emits('update:record', null)
+  emits('update:modelValue', null)
+  emits('input', localValue.value)
+}
+
+const select = (record: any) => {
+  if(record instanceof Object){
+    selectedRecord.value = record
+  }
+  inputValue.value = recordText(record)
+  const {recordKey} = props
+  if(recordKey != null){
+    selectedRecord.value = record
+    emits('update:record', record)
+    emits('update:modelValue', record[recordKey])
+    localValue.value = record[recordKey]
+  }else{
+    emits('update:modelValue', record)
+    localValue.value = record
+  }
+  emits('input', localValue.value)
+}
+
+const slots = useSlots()
+
+const recordText = (record: any) => {
+  if(record == null){
+    return ''
+  }
+  const slot = slots.default
+  if(slot != null){
+    const vnode = slot({record})
+    const text = vnode[0].children as string
+    return text.trim()
+  }
+  return record.toString()
+}
+
+defineExpose({
+  select,
+})
 </script>
