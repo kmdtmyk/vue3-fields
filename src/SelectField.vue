@@ -264,8 +264,7 @@ const recordText = (record: any) => {
   const slot = slots.default
   if(slot != null){
     const vnode = slot({record})
-    const text = vnode[0].children as string
-    return text.trim()
+    return vnode[0].children
   }
   return record.toString()
 }

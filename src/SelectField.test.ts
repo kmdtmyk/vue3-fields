@@ -227,6 +227,21 @@ describe('placeholder', () => {
     expect(input.attributes().placeholder).toEqual('bar')
   })
 
+  test('with slot', async () => {
+    const wrapper = mount(Component, {
+      props: {
+        recordKey: 'id',
+        records: [{id: 1, name: 'foo'}],
+        modelValue: 1,
+      },
+      slots: {
+        default: '{{record.id}}: {{record.name}}'
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    expect(input.attributes().placeholder).toEqual('1: foo')
+  })
+
 })
 
 describe('onUpdate:modelValue', () => {
