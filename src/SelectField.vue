@@ -1,5 +1,6 @@
 <template lang='pug'>
 DropdownInput(
+  ref='dropdownInput'
   v-model='inputValue'
   v-bind='$attrs'
   type='text'
@@ -44,7 +45,6 @@ import DropdownInput from './DropdownInput.vue'
 import DropdownList from './DropdownList.vue'
 import Arrays from './Arrays'
 import Strings from './Strings'
-import VueAttrs from './VueAttrs'
 import VueProps from './VueProps'
 import DebounceFunction from './DebounceFunction'
 import defaultAsyncWait from './defaultAsyncWait'
@@ -162,10 +162,11 @@ const isAsync = computed(() => {
   return VueProps.isAsyncFunction(props.records)
 })
 
-const attrs = useAttrs()
+const dropdownInput = ref<typeof DropdownInput>()
 
 const onFocus = (e: Event) => {
-  if(VueAttrs.readonly(attrs)){
+  const input = dropdownInput.value?.input as HTMLInputElement
+  if(input?.readOnly === true){
     // TODO: test code
     inputValue.value = placeholder.value
   }else if(isAsync.value === true && Arrays.isNullOrEmpty(asyncRecords.value)){

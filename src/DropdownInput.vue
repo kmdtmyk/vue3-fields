@@ -117,6 +117,9 @@ const clickClear = (e: Event) => {
   emits('clear', null)
 }
 
+defineExpose({
+  input,
+})
 </script>
 
 <style scoped>
