@@ -84,8 +84,7 @@ watch(modelValue, (value) => {
   localValue.value = value
   const {recordKey} = props
 
-  // if(recordKey != null && isAsync.value === false){
-  if(recordKey != null){
+  if(recordKey != null && VueProps.isAsyncFunction(props.records) === false){
     if(value == null){
       selectedRecord.value = null
       return
