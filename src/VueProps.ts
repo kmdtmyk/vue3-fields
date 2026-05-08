@@ -1,6 +1,6 @@
 export default class{
 
-  static isAsyncFunction(prop){
+  static isAsyncFunction(prop: any){
     if(prop instanceof Function === false){
       return false
     }
@@ -10,7 +10,7 @@ export default class{
     return false
   }
 
-  static toOnOff(prop){
+  static toOnOff(prop: any): 'on' | 'off' | null {
     if(prop === true || prop === 'on'){
       return 'on'
     }
