@@ -1,11 +1,11 @@
 export default class{
 
-  constructor(func){
-    this.func = func
-    this.timeoutID = null
+  timeoutID: any = null
+
+  constructor(private func: Function){
   }
 
-  call(option){
+  call(option: {wait: number, arguments: any}){
 
     const {wait} = option
 
