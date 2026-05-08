@@ -183,6 +183,5 @@ input{
 .clear::after{
   content: '×';
   font-size: 1.2em;
-  background-color: #fff;
 }
 </style>
