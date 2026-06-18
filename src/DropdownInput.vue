@@ -56,7 +56,7 @@ const editable = computed(() => {
 })
 
 const clearable = computed(() => {
-  if(!editable){
+  if(editable.value === false){
     return false
   }
   if(clear != null){

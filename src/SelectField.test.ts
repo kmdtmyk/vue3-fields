@@ -188,6 +188,26 @@ describe('clear', () => {
     expect(wrapper.find('.clear').exists()).toEqual(false)
   })
 
+  test('readonly', async () => {
+    const wrapper = mount(Component, {
+      props: {
+        modelValue: 1,
+        readonly: true,
+      },
+    })
+    expect(wrapper.find('.clear').exists()).toEqual(false)
+  })
+
+  test('disabled', async () => {
+    const wrapper = mount(Component, {
+      props: {
+        modelValue: 1,
+        disabled: true,
+      },
+    })
+    expect(wrapper.find('.clear').exists()).toEqual(false)
+  })
+
 })
 
 describe('title', () => {
