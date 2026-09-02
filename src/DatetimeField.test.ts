@@ -32,3 +32,31 @@ describe('value', () => {
   })
 
 })
+
+describe('update:modelValue', () => {
+
+  test('datetime', async () => {
+    const wrapper = mount(Component, {
+      props: {
+        modelValue: null,
+      },
+    })
+    await wrapper.get('input').setValue('2026-09-02T11:20:50')
+    expect(wrapper.emitted('update:modelValue')).toEqual([
+      ['2026-09-02T11:20:50+09:00']
+    ])
+  })
+
+  test('empty', async () => {
+    const wrapper = mount(Component, {
+      props: {
+        modelValue: '2026-09-02T11:20:50+09:00',
+      },
+    })
+    await wrapper.get('input').setValue('')
+    expect(wrapper.emitted('update:modelValue')).toEqual([
+      [null]
+    ])
+  })
+
+})
