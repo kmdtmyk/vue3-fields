@@ -1,4 +1,4 @@
-import {describe, test, expect} from 'vitest'
+import {afterEach, describe, test, expect, vi} from 'vitest'
 import {mount} from '@vue/test-utils'
 import Component from './DatetimeField.vue'
 
@@ -11,6 +11,15 @@ describe('value', () => {
       }
     })
     expect(wrapper.element.value).toEqual('2026-09-02T11:20:50.000')
+  })
+
+  test('YYYY-MM-DDTHH:mm:ssZ', () => {
+    const wrapper = mount(Component, {
+      props: {
+        modelValue: '2026-09-02T03:18:49Z',
+      }
+    })
+    expect(wrapper.element.value).toEqual('2026-09-02T12:18:49.000')
   })
 
   test('null', () => {
