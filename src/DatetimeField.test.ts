@@ -1,4 +1,4 @@
-import {afterEach, describe, test, expect, vi} from 'vitest'
+import {describe, test, expect} from 'vitest'
 import {mount} from '@vue/test-utils'
 import Component from './DatetimeField.vue'
 
