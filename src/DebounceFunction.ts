@@ -1,8 +1,8 @@
 export default class{
 
-  timeoutID: any = null
+  private timeoutID: ReturnType<typeof setTimeout> | null = null
 
-  constructor(private func: Function){
+  constructor(private readonly func: Function){
   }
 
   call(option: {wait: number, arguments: any}){
@@ -15,16 +15,20 @@ export default class{
 
     if(wait <= 0){
       this.func(...option.arguments)
-    }else{
-      this.timeoutID = setTimeout(() => {
-        this.timeoutID = null
-        this.func(...option.arguments)
-      }, wait)
+      return
     }
+
+    this.timeoutID = setTimeout(() => {
+      this.timeoutID = null
+      this.func(...option.arguments)
+    }, wait)
 
   }
 
   cancel(){
+    if(this.timeoutID == null){
+      return
+    }
     clearTimeout(this.timeoutID)
     this.timeoutID = null
   }
