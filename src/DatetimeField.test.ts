@@ -10,7 +10,7 @@ describe('value', () => {
         modelValue: '2026-09-02T11:20:50+09:00',
       }
     })
-    expect(wrapper.element.value).toEqual('2026-09-02T11:20:50.000')
+    expect(wrapper.element.value).toEqual('2026-09-02T11:20:50')
   })
 
   test('YYYY-MM-DDTHH:mm:ssZ', () => {
@@ -19,7 +19,7 @@ describe('value', () => {
         modelValue: '2026-09-02T03:18:49Z',
       }
     })
-    expect(wrapper.element.value).toEqual('2026-09-02T12:18:49.000')
+    expect(wrapper.element.value).toEqual('2026-09-02T12:18:49')
   })
 
   test('null', () => {
