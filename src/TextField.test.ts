@@ -3,6 +3,53 @@ import {mount} from '@vue/test-utils'
 import {nextTick}  from 'vue'
 import Component from './TextField.vue'
 
+describe('name', () => {
+
+  test('string', () => {
+    const wrapper = mount(Component, {
+      props: {
+        name: 'foo',
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    expect(input.attributes().name).toEqual('foo')
+  })
+
+  test('null', () => {
+    const wrapper = mount(Component, {
+      props: {
+        name: null,
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    expect(input.attributes().name).toBeUndefined()
+  })
+
+  test('without value', () => {
+    const wrapper = mount(Component, {
+      props: {
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    expect(input.attributes().name).toBeUndefined()
+  })
+
+})
+
+describe('type', () => {
+
+  test('number', () => {
+    const wrapper = mount(Component, {
+      props: {
+        type: 'number',
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    expect(input.attributes().type).toEqual('text')
+  })
+
+})
+
 describe('autocomplete', () => {
 
   test('array', async () => {
