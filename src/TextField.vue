@@ -57,7 +57,7 @@ export default {
   watch: {
     modelValue: {
       handler(value){
-        this.inputValue = value
+        this.inputValue = value ?? ''
       },
       immediate: true,
     },

@@ -1,4 +1,4 @@
-import {describe, test, expect} from 'vitest'
+import {describe, test, expect, vi} from 'vitest'
 import {mount} from '@vue/test-utils'
 import {nextTick}  from 'vue'
 import Component from './TextField.vue'
@@ -64,6 +64,35 @@ describe('autocomplete', () => {
     expect(items.length).toEqual(2)
     expect(items[0].text()).toEqual('foo')
     expect(items[1].text()).toEqual('bar')
+  })
+
+  test('function modelValueなし', async () => {
+    const func = vi.fn()
+    func.mockReturnValue([])
+    const wrapper = mount(Component, {
+      props: {
+        autocomplete: func,
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    await input.trigger('focus')
+    expect(func).toHaveBeenCalledOnce()
+    expect(func).toHaveBeenCalledWith('')
+  })
+
+  test('function modelValueあり', async () => {
+    const func = vi.fn()
+    func.mockReturnValue([])
+    const wrapper = mount(Component, {
+      props: {
+        modelValue: 'foo',
+        autocomplete: func,
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    await input.trigger('focus')
+    expect(func).toHaveBeenCalledOnce()
+    expect(func).toHaveBeenCalledWith('foo')
   })
 
 })
