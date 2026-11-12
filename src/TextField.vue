@@ -6,7 +6,7 @@ DropdownInput(
   type='text'
   :autocomplete='autocompleteAttribute'
   :loading='loading || $attrs.loading'
-  @input.native='onInputNative'
+  @input='onInput'
   @keydown.up='onKeydownUp'
   @keydown.down='onKeydownDown'
   @keydown.enter='onKeydownEnter'
@@ -128,7 +128,7 @@ export default {
         this.callAsyncRecords()
       }
     },
-    onInputNative(e){
+    onInput(e){
       if(this.isAsync === true){
         this.callAsyncRecords()
       }

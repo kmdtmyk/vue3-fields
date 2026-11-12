@@ -97,6 +97,22 @@ describe('autocomplete', () => {
 
 })
 
+describe('@input', () => {
+
+  test('input', async () => {
+    const func = vi.fn()
+    const wrapper = mount(Component, {
+      props: {
+        onInput: func,
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    await input.setValue('foo')
+    expect(func).toHaveBeenCalledOnce()
+  })
+
+})
+
 test('class', () => {
   const wrapper = mount(Component, {
     props: {
