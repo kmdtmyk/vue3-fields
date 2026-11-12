@@ -98,9 +98,6 @@ export default {
       })
     },
     isAsync(){
-      if(this.asyncWait != null){
-        return true
-      }
       return VueProps.isAsyncFunction(this.autocomplete)
     },
     asyncRecordsFunction(){
