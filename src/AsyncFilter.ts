@@ -27,15 +27,18 @@ export default class<T>{
 
   private nextRequestId = 0
   private lastCompletedRequestId = 0
+  private pendingRequestIds = new Set<number>()
 
   constructor(private readonly onResult: (result: T) => void){
   }
 
   run(func: () => Promise<T>): Promise<void>{
     const requestId = ++this.nextRequestId
+    this.pendingRequestIds.add(requestId)
 
     return func().then(
       (value) => {
+        this.pendingRequestIds.delete(requestId)
         if(requestId < this.lastCompletedRequestId){
           return
         }
@@ -43,6 +46,7 @@ export default class<T>{
         this.onResult(value)
       },
       (error) => {
+        this.pendingRequestIds.delete(requestId)
         if(requestId < this.lastCompletedRequestId){
           return
         }
@@ -50,6 +54,18 @@ export default class<T>{
         throw error
       },
     )
+  }
+
+  /**
+   * @returns 有効な完了待ちの処理が残っているとtrue
+   */
+  hasPending(): boolean{
+    for(const requestId of this.pendingRequestIds){
+      if(this.lastCompletedRequestId < requestId){
+        return true
+      }
+    }
+    return false
   }
 
 }

@@ -19,10 +19,12 @@ describe('AsyncFilter', () => {
 
     const firstResult = filter.run(async () => first.promise)
     const secondResult = filter.run(async () => second.promise)
+    expect(filter.hasPending()).toBe(true)
 
     second.resolve('second result')
     await secondResult
     expect(results).toEqual(['second result'])
+    expect(filter.hasPending()).toBe(false)
 
     first.resolve('first result')
     await firstResult
@@ -37,14 +39,17 @@ describe('AsyncFilter', () => {
 
     const firstResult = filter.run(async () => first.promise)
     const secondResult = filter.run(async () => second.promise)
+    expect(filter.hasPending()).toBe(true)
 
     first.resolve('first result')
     await firstResult
     expect(results).toEqual(['first result'])
+    expect(filter.hasPending()).toBe(true)
 
     second.resolve('second result')
     await secondResult
     expect(results).toEqual(['first result', 'second result'])
+    expect(filter.hasPending()).toBe(false)
   })
 
 })
