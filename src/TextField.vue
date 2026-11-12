@@ -52,7 +52,30 @@ export default {
       loading: false,
       asyncRecords: [],
       inputValue: '',
+      asyncRecordsFunction: null,
     }
+  },
+  created(){
+    if(this.isAsync !== true){
+      return
+    }
+
+    this.asyncRecordsFunction = new DebounceFunction((query) => {
+      const startTime = Date.now()
+      this.autocomplete(query).then(
+        (data) => {
+          if(startTime < this.lastAsyncRecordsTime){
+            return
+          }
+          this.lastAsyncRecordsTime = startTime
+          this.asyncRecords = data
+          this.loading = false
+        },
+        (error) => {
+          this.loading = false
+        }
+      )
+    })
   },
   watch: {
     modelValue: {
@@ -100,24 +123,6 @@ export default {
     isAsync(){
       return VueProps.isAsyncFunction(this.autocomplete)
     },
-    asyncRecordsFunction(){
-      return new DebounceFunction((query) => {
-        const startTime = Date.now()
-        this.autocomplete(query).then(
-          (data) => {
-            if(startTime < this.lastAsyncRecordsTime){
-              return
-            }
-            this.lastAsyncRecordsTime = startTime
-            this.asyncRecords = data
-            this.loading = false
-          },
-          (error) => {
-            this.loading = false
-          }
-        )
-      })
-    },
   },
   methods: {
     onFocus(e){
@@ -131,11 +136,16 @@ export default {
       }
     },
     callAsyncRecords(){
+      if(this.isAsync !== true){
+        return
+      }
       let wait
       if(this.asyncWait instanceof Function){
         wait = this.asyncWait(this.inputValue)
-      }else{
+      }else if(this.asyncWait != null){
         wait = this.asyncWait
+      }else{
+        wait = defaultAsyncWait(this.inputValue)
       }
       this.asyncRecordsFunction.call({
         wait,
