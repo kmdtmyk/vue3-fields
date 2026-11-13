@@ -26,6 +26,11 @@ div(
 .dropdown-list-item{
   text-wrap: wrap;
 
+  /* 何もない時空行が潰れるのを防ぐ */
+  &:empty::before{
+    content: '\00A0';
+  }
+
   &.text{
     padding: 0.2em 0.4em;
   }
