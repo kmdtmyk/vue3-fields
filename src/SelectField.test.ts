@@ -279,3 +279,26 @@ describe('onUpdate:modelValue', () => {
   })
 
 })
+
+describe('records', () => {
+
+  test('async function', async () => {
+    const queries: string[] = []
+    const func = async (query: string) => {
+      queries.push(query)
+      return []
+    }
+    const wrapper = mount(Component, {
+      props: {
+        records: func,
+        asyncWait: 0,
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    await input.trigger('focus')
+    await input.setValue('a')
+    // focus時と入力時で2回呼ばれる
+    expect(queries).toEqual(['', 'a'])
+  })
+
+})
