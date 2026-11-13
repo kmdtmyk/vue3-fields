@@ -133,13 +133,14 @@ const isEmpty = computed(() => {
 })
 
 const asyncRecordsFunction = computed(() => {
+  if(props.records instanceof Function === false || VueProps.isAsyncFunction(props.records) === false){
+    return null
+  }
+  const records = props.records
   let lastAsyncRecordsTime = 0
   return new DebounceFunction((query: any) => {
     const startTime = Date.now()
-    if(props.records instanceof Function === false){
-      return Promise.resolve()
-    }
-    return props.records(query).then(
+    return records(query).then(
       (data: any) => {
         if(startTime < lastAsyncRecordsTime){
           return
@@ -156,9 +157,6 @@ const asyncRecordsFunction = computed(() => {
 })
 
 const isAsync = computed(() => {
-  if(props.asyncWait != null){
-    return true
-  }
   return VueProps.isAsyncFunction(props.records)
 })
 
@@ -187,6 +185,9 @@ const callAsyncRecords = () => {
     wait = _asyncWait(inputValue.value)
   }else{
     wait = _asyncWait
+  }
+  if(asyncRecordsFunction.value == null){
+    return
   }
   asyncRecordsFunction.value.call({
     wait,
