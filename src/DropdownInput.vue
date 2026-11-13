@@ -62,7 +62,7 @@ const clearable = computed(() => {
   if(clear != null){
     return clear
   }
-  return modelValue != null
+  return modelValue.value != null
 })
 
 watch(() => modelValue.value, () => {
