@@ -73,6 +73,21 @@ describe('DebounceFunction', () => {
     expect(func).not.toHaveBeenCalled()
   })
 
+  test('isWaiting reports whether a call is waiting', () => {
+    vi.useFakeTimers()
+    const debounce = new DebounceFunction(() => {})
+
+    expect(debounce.isWaiting()).toBe(false)
+    debounce.call({
+      wait: 100,
+      arguments: [],
+    })
+    expect(debounce.isWaiting()).toBe(true)
+
+    vi.advanceTimersByTime(100)
+    expect(debounce.isWaiting()).toBe(false)
+  })
+
   test('tracks executing promises and removes them when completed', async () => {
     let resolve!: () => void
     const promise = new Promise<void>((resolvePromise) => {

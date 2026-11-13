@@ -37,6 +37,13 @@ export default class{
   }
 
   /**
+   * @returns 実行待ちの呼び出しがある場合はtrue
+   */
+  isWaiting(): boolean{
+    return this.timeoutID != null
+  }
+
+  /**
    *
    * @returns 実行中で未完了の件数
    */
