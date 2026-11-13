@@ -44,7 +44,7 @@ const asyncRecords = ref<string[]>([])
 const inputValue = ref('')
 
 const useDropdown = computed(() => {
-  return props.autocomplete instanceof Array || props.autocomplete instanceof Function
+  return Array.isArray(props.autocomplete) || props.autocomplete instanceof Function
 })
 
 const isAsync = computed(() => {
@@ -156,7 +156,7 @@ const onKeydownEnter = (event: KeyboardEvent) => {
   }
 }
 
-const select = (record: any) => {
+const select = (record: string) => {
   inputValue.value = record
   modelValue.value = record
 }
