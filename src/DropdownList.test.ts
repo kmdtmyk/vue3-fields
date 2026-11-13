@@ -1,6 +1,6 @@
 import {describe, expect, test} from 'vitest'
 import {mount} from '@vue/test-utils'
-import {nextTick} from 'vue'
+import {h, nextTick} from 'vue'
 import Component from './DropdownList.vue'
 
 describe('DropdownList', () => {
@@ -16,6 +16,19 @@ describe('DropdownList', () => {
     expect(items).toHaveLength(2)
     expect(items[0].text()).toBe('foo')
     expect(items[1].text()).toBe('bar')
+  })
+
+  test('renders records with the default slot', () => {
+    const wrapper = mount(Component, {
+      props: {
+        records: [{id: 1, name: 'foo'}],
+      },
+      slots: {
+        default: ({record}) => h('span', `${record.id}: ${record.name}`),
+      },
+    })
+
+    expect(wrapper.find('.dropdown-list-item').text()).toBe('1: foo')
   })
 
   test('selects the first record by default', () => {
