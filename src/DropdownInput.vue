@@ -45,7 +45,7 @@ const {clear, loading, readonly, disabled} = defineProps<{
 const dropdownOpen = ref(false)
 const inputValue = ref(modelValue)
 const dropdownStyle = ref({})
-const anchorName = `--dropdown-${useId().replaceAll(':', '-')}`
+const anchorName = `--vue3-fields-dropdown-input-${useId().replaceAll(':', '-')}`
 
 const editable = computed(() => {
   if(readonly || disabled){
