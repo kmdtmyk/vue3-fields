@@ -193,6 +193,7 @@ export default {
       this.$emit('input', e)
     },
     select(record){
+      this.inputValue = record
       this.$emit('update:modelValue', record)
     },
   },
