@@ -9,7 +9,8 @@ SelectField(
 
 <script lang='ts' setup>
 import SelectField from '@/src/SelectField.vue'
-import {languages} from '@/demo/data'
+
+const languages = ['C', 'Java', 'C++', 'Python', 'JavaScript', 'Perl', 'PHP', 'Rust', 'Go', 'Ruby', 'Swift', 'Kotlin']
 
 const records = () => {
   return languages

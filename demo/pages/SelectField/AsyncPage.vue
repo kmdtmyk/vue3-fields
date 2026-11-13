@@ -9,8 +9,9 @@ SelectField(
 
 <script lang='ts' setup>
 import SelectField from '@/src/SelectField.vue'
-import {languages} from '@/demo/data'
 import sleep from '@/demo/sleep'
+
+const languages = ['C', 'Java', 'C++', 'Python', 'JavaScript', 'Perl', 'PHP', 'Rust', 'Go', 'Ruby', 'Swift', 'Kotlin']
 
 const records = async () => {
   await sleep(300)
