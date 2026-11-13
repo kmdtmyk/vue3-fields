@@ -62,7 +62,7 @@ const props = defineProps<{
   records?: Array<any> | ((query: string) => Array<any> | Promise<Array<any>>)
   record?: Object
   recordKey?: string
-  asyncWait?: number | Function
+  asyncWait?: number | ((query: string) => number)
   dropdownStyle?: string | Object
   placeholder?: string
 }>()
