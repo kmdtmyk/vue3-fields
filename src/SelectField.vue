@@ -46,8 +46,7 @@ import DropdownList from './DropdownList.vue'
 import Arrays from './Arrays'
 import Strings from './Strings'
 import VueProps from './VueProps'
-import AsyncDebounceFilter from './AsyncDebounceFilter'
-import defaultAsyncWait from './defaultAsyncWait'
+import useAsyncRecords from './useAsyncRecords'
 
 
 defineOptions({
@@ -73,36 +72,31 @@ const emits = defineEmits([
   'input',
 ])
 
-const loading = ref<boolean>(false)
-const asyncRecords = ref<Array<any> | null>(null)
 const localValue = ref<any>(null)
 const inputValue = ref<string>('')
 const selectedRecord = ref<any>(null)
 
-let asyncRecordsFilter: AsyncDebounceFilter<any> | null = null
-if(VueProps.isAsyncFunction(props.records)){
-  asyncRecordsFilter = new AsyncDebounceFilter(
-    (records) => {
-      asyncRecords.value = records
-      loading.value = asyncRecordsFilter?.hasPending() ?? false
-    },
-    () => {
-      loading.value = asyncRecordsFilter?.hasPending() ?? false
-    },
-  )
-}
+const records = props.records
+const asyncRecordsFunction = VueProps.isAsyncFunction(records) ? records : null
+const syncRecordsFunction = VueProps.isSyncFunction(records) ? records : null
+const arrayRecords = Array.isArray(records) ? records : null
+const {
+  records: asyncRecords,
+  loading,
+  run: runAsyncRecords,
+} = useAsyncRecords(asyncRecordsFunction, props.asyncWait)
 
 
 watch(modelValue, (value) => {
   localValue.value = value
   const {recordKey} = props
 
-  if(recordKey != null && VueProps.isAsyncFunction(props.records) === false){
+  if(recordKey != null && asyncRecordsFunction == null){
     if(value == null){
       selectedRecord.value = null
       return
     }
-    selectedRecord.value = Arrays.from(props.records).find(record => {
+    selectedRecord.value = Arrays.from(records).find(record => {
       return record[recordKey] === value
     })
   }
@@ -114,19 +108,13 @@ watch(() => props.record, (value) => {
   }
 }, {immediate: true})
 
-watch(() => props.records, (value) => {
-  if(isAsync.value === true){
-    asyncRecords.value = null
-  }
-})
-
 const dropdownRecords = computed(() => {
-  if(isAsync.value === true){
+  if(asyncRecordsFunction != null){
     return asyncRecords.value
-  }else if(props.records instanceof Function){
-    return props.records(inputValue.value)
-  }else if(Array.isArray(props.records)){
-    return Arrays.search(props.records, inputValue.value)
+  }else if(syncRecordsFunction != null){
+    return syncRecordsFunction(inputValue.value)
+  }else if(arrayRecords != null){
+    return Arrays.search(arrayRecords, inputValue.value)
   }
   return null
 })
@@ -145,10 +133,6 @@ const isEmpty = computed(() => {
   return Strings.isEmpty(localValue.value)
 })
 
-const isAsync = computed(() => {
-  return asyncRecordsFilter != null
-})
-
 const dropdownInput = ref<InstanceType<typeof DropdownInput>>()
 
 const onFocus = (e: Event) => {
@@ -156,31 +140,19 @@ const onFocus = (e: Event) => {
   if(input?.readOnly === true){
     // TODO: test code
     inputValue.value = placeholder.value
-  }else if(isAsync.value === true && Arrays.isNullOrEmpty(asyncRecords.value)){
+  }else if(asyncRecordsFunction != null && Arrays.isNullOrEmpty(asyncRecords.value)){
     callAsyncRecords()
   }
 }
 
 const onInput = (e: Event) => {
-  if(isAsync.value === true){
+  if(asyncRecordsFunction != null){
     callAsyncRecords()
   }
 }
 
 const callAsyncRecords = () => {
-  const _asyncWait = props.asyncWait ?? defaultAsyncWait
-  let wait
-  if(_asyncWait instanceof Function){
-    wait = _asyncWait(inputValue.value)
-  }else{
-    wait = _asyncWait
-  }
-  if(asyncRecordsFilter == null){
-    return
-  }
-  const records = props.records as (...args: any[]) => Promise<any[]>
-  asyncRecordsFilter.run(() => records(inputValue.value), wait)
-  loading.value = true
+  runAsyncRecords(inputValue.value)
 }
 
 const dropdown = ref<InstanceType<typeof DropdownList> | null>(null)
