@@ -26,9 +26,8 @@ input(
 </template>
 
 <script lang='ts' setup>
-import {computed, ref, watch} from 'vue'
+import {computed, ref, useId, watch} from 'vue'
 import LoadingSpinner from './LoadingSpinner.vue'
-import {v4 as uuid} from 'uuid'
 
 defineOptions({
   inheritAttrs: false,
@@ -46,7 +45,7 @@ const {clear, loading, readonly, disabled} = defineProps<{
 const dropdownOpen = ref(false)
 const inputValue = ref(modelValue)
 const dropdownStyle = ref({})
-const anchorName = `--${uuid()}`
+const anchorName = `--dropdown-${useId().replaceAll(':', '-')}`
 
 const editable = computed(() => {
   if(readonly || disabled){
