@@ -142,3 +142,26 @@ test('class', () => {
   const input = wrapper.find('input[type=text]')
   expect(input.attributes().class).toEqual('foo')
 })
+
+describe('update:modelValue', () => {
+
+  test('select dropdown', async () => {
+    const wrapper = mount(Component, {
+      props: {
+        autocomplete: ['foo'],
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    await input.trigger('focus')
+    await wrapper.find('.dropdown-list-item').trigger('mousedown')
+    expect(wrapper.emitted('update:modelValue')).toEqual([['foo']])
+  })
+
+  test('text input', async () => {
+    const wrapper = mount(Component)
+    const input = wrapper.find('input[type=text]')
+    await input.setValue('foo')
+    expect(wrapper.emitted('update:modelValue')).toEqual([['foo']])
+  })
+
+})

@@ -114,6 +114,7 @@ export default {
       }
     },
     onInput(){
+      this.$emit('update:modelValue', this.inputValue)
       if(this.isAsync === true){
         this.callAsyncRecords()
       }
