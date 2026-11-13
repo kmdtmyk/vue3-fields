@@ -54,7 +54,13 @@ export default class{
   private execute(arguments_: any[]): void{
     this.executingCount += 1
 
-    const result = this.func(...arguments_)
+    let result
+    try{
+      result = this.func(...arguments_)
+    }catch(error){
+      this.executingCount -= 1
+      throw error
+    }
     if(result == null){
       this.executingCount -= 1
       return

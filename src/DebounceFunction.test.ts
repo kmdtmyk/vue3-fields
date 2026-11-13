@@ -106,4 +106,18 @@ describe('DebounceFunction', () => {
     expect(debounce.getExecutingCount()).toBe(0)
   })
 
+  test('clears executing count when the function throws synchronously', () => {
+    const debounce = new DebounceFunction(() => {
+      throw new Error('failed')
+    })
+
+    expect(() => {
+      debounce.call({
+        wait: 0,
+        arguments: [],
+      })
+    }).toThrow('failed')
+    expect(debounce.getExecutingCount()).toBe(0)
+  })
+
 })
