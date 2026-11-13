@@ -16,7 +16,7 @@ const pages = computed(() => {
     .filter(route => route.path !== '/')
     .map(route => ({
       path: route.path,
-      title: String(route.name),
+      title: route.path === '/' ? 'Home' : route.path.slice(1),
     }))
 })
 </script>
