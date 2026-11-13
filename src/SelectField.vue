@@ -137,9 +137,9 @@ const asyncRecordsFunction = computed(() => {
   return new DebounceFunction((query: any) => {
     const startTime = Date.now()
     if(props.records instanceof Function === false){
-      return
+      return Promise.resolve()
     }
-    props.records(query).then(
+    return props.records(query).then(
       (data: any) => {
         if(startTime < lastAsyncRecordsTime){
           return

@@ -1,9 +1,11 @@
+type DebouncedFunction = (...args: any[]) => void | PromiseLike<unknown>
+
 export default class{
 
   private timeoutID: ReturnType<typeof setTimeout> | null = null
   private executingCount = 0
 
-  constructor(private readonly func: Function){
+  constructor(private readonly func: DebouncedFunction){
   }
 
   call(option: {wait: number, arguments: any[]}): void{
@@ -46,7 +48,7 @@ export default class{
     this.executingCount += 1
 
     const result = this.func(...arguments_)
-    if(result == null || typeof result.then !== 'function'){
+    if(result == null){
       this.executingCount -= 1
       return
     }

@@ -62,7 +62,7 @@ export default {
 
     this.asyncRecordsFunction = new DebounceFunction((query) => {
       const startTime = Date.now()
-      this.autocomplete(query).then(
+      return this.autocomplete(query).then(
         (data) => {
           if(startTime < this.lastAsyncRecordsTime){
             return
