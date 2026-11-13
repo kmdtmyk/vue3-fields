@@ -6,6 +6,7 @@ afterEach(() => {
 })
 
 describe('DebounceFunction', () => {
+
   test('executes immediately when wait is zero or less', () => {
     const func = vi.fn()
     const debounce = new DebounceFunction(func)
@@ -71,4 +72,23 @@ describe('DebounceFunction', () => {
 
     expect(func).not.toHaveBeenCalled()
   })
+
+  test('tracks executing promises and removes them when completed', async () => {
+    let resolve!: () => void
+    const promise = new Promise<void>((resolvePromise) => {
+      resolve = resolvePromise
+    })
+    const debounce = new DebounceFunction(async () => promise)
+
+    debounce.call({
+      wait: 0,
+      arguments: [],
+    })
+    expect(debounce.getExecutingCount()).toBe(1)
+
+    resolve()
+    await new Promise((resolvePromise) => setTimeout(resolvePromise, 0))
+    expect(debounce.getExecutingCount()).toBe(0)
+  })
+
 })
