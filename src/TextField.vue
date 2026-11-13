@@ -68,7 +68,7 @@ const dropdownRecords = computed(() => {
   }else if(Array.isArray(props.autocomplete)){
     return Arrays.search(props.autocomplete, inputValue.value)
   }
-  return []
+  return null
 })
 
 let asyncRecordsFilter: AsyncDebounceFilter<string[]> | null = null

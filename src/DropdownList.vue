@@ -1,22 +1,23 @@
 <template lang='pug'>
-.dropdown-list(
-  ref='el'
-  v-if='0 < records.length || $slots.empty != null'
-  @mouseleave='selectedIndex = null'
-)
-  DropdownListItem(
-    v-if='0 < records.length'
-    v-for='(record, index) in records'
-    :class='{selected: selectedIndex === index}'
-    :key='index'
-    @mouseenter='selectedIndex = index'
-    @mousemove='selectedIndex = index'
-    @mousedown='select'
+template(v-if='records != null')
+  .dropdown-list(
+    ref='el'
+    v-if='0 < records.length || $slots.empty != null'
+    @mouseleave='selectedIndex = null'
   )
-    slot(v-bind='{record}' v-if='$slots.default')
-    template(v-else) {{record}}
-  DropdownListItem.empty(v-if='$slots.empty != null && records.length === 0')
-    slot(name='empty')
+    DropdownListItem(
+      v-if='0 < records.length'
+      v-for='(record, index) in records'
+      :class='{selected: selectedIndex === index}'
+      :key='index'
+      @mouseenter='selectedIndex = index'
+      @mousemove='selectedIndex = index'
+      @mousedown='select'
+    )
+      slot(v-bind='{record}' v-if='$slots.default')
+      template(v-else) {{record}}
+    DropdownListItem.empty(v-if='$slots.empty != null && records.length === 0')
+      slot(name='empty')
 </template>
 
 <script lang='ts' setup>
@@ -24,7 +25,7 @@ import {ref} from 'vue'
 import DropdownListItem from './DropdownListItem.vue'
 
 const {records} = defineProps<{
-  records: any[]
+  records: any[] | null
 }>()
 
 const selectedIndex = ref(0)
@@ -32,6 +33,9 @@ const selectedIndex = ref(0)
 const emits = defineEmits(['input'])
 
 const up = () => {
+  if(records == null || records.length === 0){
+    return
+  }
   const current = selectedIndex.value
   const next = current - 1
   const {length} = records
@@ -40,6 +44,9 @@ const up = () => {
 }
 
 const down = () => {
+  if(records == null || records.length === 0){
+    return
+  }
   const current = selectedIndex.value
   const next = current === null ? 0 : current + 1
   const {length} = records
@@ -48,6 +55,9 @@ const down = () => {
 }
 
 const select = () => {
+  if(records == null){
+    return false
+  }
   const record = records[selectedIndex.value]
   if(record == null){
     return false

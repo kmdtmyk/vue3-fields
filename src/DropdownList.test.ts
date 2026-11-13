@@ -68,4 +68,16 @@ describe('DropdownList', () => {
     expect(wrapper.find('.dropdown-list').exists()).toBe(false)
   })
 
+  test('does not render when records is null', () => {
+    const wrapper = mount(Component, {
+      props: {
+        records: null,
+      },
+    })
+    const dropdown = wrapper.findComponent(Component).vm
+
+    expect(wrapper.find('.dropdown-list').exists()).toBe(false)
+    expect(dropdown.select()).toBe(false)
+  })
+
 })
