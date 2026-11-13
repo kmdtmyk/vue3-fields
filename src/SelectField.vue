@@ -11,7 +11,7 @@ DropdownInput(
   :dropdown-style='props.dropdownStyle'
   :class='{empty: isEmpty}'
   :loading='loading || $attrs.loading'
-  @input.native='onInputNative'
+  @input='onInput'
   @keydown.up='onKeydownUp'
   @keydown.down='onKeydownDown'
   @keydown.enter='onKeydownEnter'
@@ -161,7 +161,7 @@ const onFocus = (e: Event) => {
   }
 }
 
-const onInputNative = (e: Event) => {
+const onInput = (e: Event) => {
   if(isAsync.value === true){
     callAsyncRecords()
   }
