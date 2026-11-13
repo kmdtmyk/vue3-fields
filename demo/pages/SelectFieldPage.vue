@@ -12,12 +12,7 @@ import SelectField from '../../src/SelectField.vue'
 
 const languages = ['C', 'Java', 'C++', 'Python', 'JavaScript', 'Perl', 'PHP', 'Rust', 'Go', 'Ruby', 'Swift', 'Kotlin']
 
-const records = async () => {
-  await sleep(300)
+const records = () => {
   return languages
-}
-
-const sleep = (time: number) => {
-  return new Promise((resolve) => setTimeout(resolve, time))
 }
 </script>
