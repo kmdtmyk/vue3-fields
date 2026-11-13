@@ -11,7 +11,7 @@ div(
 //-   slot
 </template>
 
-<script>
+<script lang='ts' setup>
 // export default {
 //   data(){
 //     const defaultSlot = this.$slots.default

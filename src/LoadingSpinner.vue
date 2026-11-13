@@ -4,9 +4,7 @@
   .circle
 </template>
 
-<script>
-export default {
-}
+<script lang='ts' setup>
 </script>
 
 <style scoped>
