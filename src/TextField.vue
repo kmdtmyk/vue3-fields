@@ -19,7 +19,8 @@ DropdownInput(
   )
 </template>
 
-<script>
+<script lang='ts' setup>
+import {computed, nextTick, ref, watch} from 'vue'
 import DropdownInput from './DropdownInput.vue'
 import DropdownList from './DropdownList.vue'
 import Arrays from './Arrays'
@@ -27,156 +28,136 @@ import VueProps from './VueProps'
 import AsyncDebounceFilter from './AsyncDebounceFilter'
 import defaultAsyncWait from './defaultAsyncWait'
 
-export default {
+defineOptions({
   inheritAttrs: false,
-  components: {
-    DropdownInput,
-    DropdownList,
-  },
-  props: {
-    modelValue: String,
-    autocomplete: {
-      type: [String, Boolean, Array, Function],
-      default(){
-        return null
-      },
-    },
-    asyncWait: {
-      type: [Number, Function],
-    },
-  },
-  data(){
-    return {
-      loading: false,
-      asyncRecords: [],
-      inputValue: '',
-      asyncRecordsFilter: null,
-    }
-  },
-  created(){
-    if(this.isAsync !== true){
-      return
-    }
+})
 
-    let filter
-    filter = new AsyncDebounceFilter(
-      (records) => {
-        this.asyncRecords = records
-        this.loading = filter.hasPending()
-      },
-      () => {
-        this.loading = filter.hasPending()
-      },
-    )
-    this.asyncRecordsFilter = filter
-  },
-  watch: {
-    modelValue: {
-      handler(value){
-        this.inputValue = value ?? ''
-      },
-      immediate: true,
-    },
-  },
-  computed: {
-    autocompleteAttribute(){
-      if(this.useDropdown){
-        return 'off'
-      }
-      return VueProps.toOnOff(this.autocomplete)
-    },
-    useDropdown(){
-      const {autocomplete} = this.$props
-      if(autocomplete instanceof Array || autocomplete instanceof Function){
-        return true
-      }
-      return false
-    },
-    dropdownRecords(){
-      if(this.isAsync){
-        return this.asyncRecords
-      }
+const props = defineProps<{
+  autocomplete?: string | boolean | string[] | ((query: string) => string[] | Promise<string[]>)
+  asyncWait?: number | ((query: string) => number)
+}>()
 
-      if(this.autocomplete instanceof Function){
-        return this.autocomplete(this.inputValue)
-      }else{
-        return Arrays.search(this.autocomplete, this.inputValue)
-      }
+const modelValue = defineModel<string>()
+
+const loading = ref(false)
+const asyncRecords = ref<string[]>([])
+const inputValue = ref('')
+
+const useDropdown = computed(() => {
+  return props.autocomplete instanceof Array || props.autocomplete instanceof Function
+})
+
+const isAsync = computed(() => {
+  return VueProps.isAsyncFunction(props.autocomplete)
+})
+
+const autocompleteAttribute = computed(() => {
+  if(useDropdown.value){
+    return 'off'
+  }
+  return VueProps.toOnOff(props.autocomplete)
+})
+
+const dropdownRecords = computed(() => {
+  if(isAsync.value === true){
+    return asyncRecords.value
+  }
+
+  if(props.autocomplete instanceof Function){
+    return props.autocomplete(inputValue.value)
+  }else if(Array.isArray(props.autocomplete)){
+    return Arrays.search(props.autocomplete, inputValue.value)
+  }
+  return []
+})
+
+let asyncRecordsFilter: AsyncDebounceFilter<string[]> | null = null
+if(isAsync.value === true){
+  asyncRecordsFilter = new AsyncDebounceFilter(
+    (records) => {
+      asyncRecords.value = records
+      loading.value = asyncRecordsFilter?.hasPending() ?? false
     },
-    isAsync(){
-      return VueProps.isAsyncFunction(this.autocomplete)
+    () => {
+      loading.value = asyncRecordsFilter?.hasPending() ?? false
     },
-  },
-  methods: {
-    onFocus(){
-      if(this.isAsync === true && Arrays.isNullOrEmpty(this.asyncRecords)){
-        this.callAsyncRecords()
-      }
-    },
-    onInput(){
-      this.$emit('update:modelValue', this.inputValue)
-      if(this.isAsync === true){
-        this.callAsyncRecords()
-      }
-    },
-    callAsyncRecords(){
-      if(this.isAsync !== true){
-        return
-      }
-      let wait
-      if(this.asyncWait instanceof Function){
-        wait = this.asyncWait(this.inputValue)
-      }else if(this.asyncWait != null){
-        wait = this.asyncWait
-      }else{
-        wait = defaultAsyncWait(this.inputValue)
-      }
-      this.asyncRecordsFilter.run(
-        () => this.autocomplete(this.inputValue),
-        wait,
-      )
-      this.loading = true
-    },
-    onKeydownUp(e){
-      if(!this.useDropdown){
-        return
-      }
-      const dropdown = this.$refs.dropdown
-      e.preventDefault()
-      if(dropdown){
-        dropdown.up()
-        return
-      }
-      this.$nextTick(() => {
-        this.$refs.dropdown.up()
-      })
-    },
-    onKeydownDown(e){
-      if(!this.useDropdown){
-        return
-      }
-      const dropdown = this.$refs.dropdown
-      e.preventDefault()
-      if(dropdown){
-        dropdown.down()
-      }
-    },
-    onKeydownEnter(e){
-      if(!this.useDropdown){
-        return
-      }
-      const {dropdown} = this.$refs
-      if(dropdown == null){
-        return
-      }
-      if(dropdown.select() === true){
-        e.preventDefault()
-      }
-    },
-    select(record){
-      this.inputValue = record
-      this.$emit('update:modelValue', record)
-    },
-  },
+  )
+}
+
+watch(modelValue, (value) => {
+  inputValue.value = value ?? ''
+}, {immediate: true})
+
+const onFocus = () => {
+  if(isAsync.value === true && Arrays.isNullOrEmpty(asyncRecords.value)){
+    callAsyncRecords()
+  }
+}
+
+const onInput = () => {
+  modelValue.value = inputValue.value
+  if(isAsync.value === true){
+    callAsyncRecords()
+  }
+}
+
+const callAsyncRecords = () => {
+  if(isAsync.value !== true || asyncRecordsFilter == null){
+    return
+  }
+
+  let wait
+  if(props.asyncWait instanceof Function){
+    wait = props.asyncWait(inputValue.value)
+  }else if(props.asyncWait != null){
+    wait = props.asyncWait
+  }else{
+    wait = defaultAsyncWait(inputValue.value)
+  }
+
+  const autocomplete = props.autocomplete as (query: string) => Promise<any[]>
+  asyncRecordsFilter.run(
+    () => autocomplete(inputValue.value),
+    wait,
+  )
+  loading.value = true
+}
+
+const dropdown = ref<InstanceType<typeof DropdownList> | null>(null)
+
+const onKeydownUp = (event: KeyboardEvent) => {
+  if(!useDropdown.value){
+    return
+  }
+  event.preventDefault()
+  if(dropdown.value != null){
+    dropdown.value.up()
+    return
+  }
+  nextTick(() => {
+    dropdown.value?.up()
+  })
+}
+
+const onKeydownDown = (event: KeyboardEvent) => {
+  if(!useDropdown.value){
+    return
+  }
+  event.preventDefault()
+  dropdown.value?.down()
+}
+
+const onKeydownEnter = (event: KeyboardEvent) => {
+  if(!useDropdown.value || dropdown.value == null){
+    return
+  }
+  if(dropdown.value.select() === true){
+    event.preventDefault()
+  }
+}
+
+const select = (record: any) => {
+  inputValue.value = record
+  modelValue.value = record
 }
 </script>
