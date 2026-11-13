@@ -183,29 +183,24 @@ const callAsyncRecords = () => {
   loading.value = true
 }
 
-const dropdown = ref()
+const dropdown = ref<InstanceType<typeof DropdownList> | null>(null)
 
 const onKeydownUp = async (e: Event) => {
   await nextTick()
-  dropdown.value.up()
+  dropdown.value?.up()
 }
 
 const onKeydownDown = (e: Event) => {
-  if(dropdown.value){
-    dropdown.value.down()
-  }
+  dropdown.value?.down()
 }
 
 const onKeydownEnter = (e: Event) => {
-  if(dropdown.value == null){
-    return
-  }
-  if(dropdown.value.select() === true){
+  if(dropdown.value?.select() === true){
     e.preventDefault()
   }
 }
 
-const onKeydownDelete = (e: Event) => {
+const onKeydownDelete = (e: KeyboardEvent) => {
   const target = e.target as HTMLInputElement
   if(target != null && target.value === '' && modelValue.value != null){
     clear()
