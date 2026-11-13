@@ -46,9 +46,7 @@ const syncRecordsFunction = VueProps.isSyncFunction(autocomplete) ? autocomplete
 const arrayRecords = Array.isArray(autocomplete) ? autocomplete : null
 
 const useDropdown = computed(() => {
-  return arrayRecords != null
-    || syncRecordsFunction != null
-    || asyncRecordsFunction != null
+  return arrayRecords != null || syncRecordsFunction != null || asyncRecordsFunction != null
 })
 
 const {
@@ -103,13 +101,7 @@ const onKeydownUp = (event: KeyboardEvent) => {
     return
   }
   event.preventDefault()
-  if(dropdown.value != null){
-    dropdown.value.up()
-    return
-  }
-  nextTick(() => {
-    dropdown.value?.up()
-  })
+  dropdown.value?.up()
 }
 
 const onKeydownDown = (event: KeyboardEvent) => {
