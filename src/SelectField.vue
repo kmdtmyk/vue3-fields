@@ -28,7 +28,6 @@ DropdownInput(
   )
     template(v-slot='{record}')
       slot(v-bind='{record}' v-if='$slots.default')
-      template(v-else-if='typeof record === "string" && record.trim() === ""') &nbsp;
       template(v-else) {{record}}
     template(v-slot:empty='' v-if='$slots.empty && inputValue !== ""')
       slot(name='empty')
