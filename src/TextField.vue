@@ -112,13 +112,10 @@ export default {
 
       let array
       if(this.autocomplete instanceof Function){
-        array = this.autocomplete(this.inputValue)
+        return this.autocomplete(this.inputValue)
       }else{
-        array = Arrays.search(this.autocomplete, this.inputValue)
+        return Arrays.search(this.autocomplete, this.inputValue)
       }
-      return array.filter(value => {
-        return Strings.isNotBlank(value)
-      })
     },
     isAsync(){
       return VueProps.isAsyncFunction(this.autocomplete)
