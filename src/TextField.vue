@@ -26,7 +26,7 @@ import DropdownList from './DropdownList.vue'
 import Arrays from './Arrays'
 import Strings from './Strings'
 import VueProps from './VueProps'
-import DebounceFunction from './DebounceFunction'
+import AsyncDebounceFilter from './AsyncDebounceFilter'
 import defaultAsyncWait from './defaultAsyncWait'
 
 export default {
@@ -52,7 +52,7 @@ export default {
       loading: false,
       asyncRecords: [],
       inputValue: '',
-      asyncRecordsFunction: null,
+      asyncRecordsFilter: null,
     }
   },
   created(){
@@ -60,22 +60,17 @@ export default {
       return
     }
 
-    this.asyncRecordsFunction = new DebounceFunction((query) => {
-      const startTime = Date.now()
-      return this.autocomplete(query).then(
-        (data) => {
-          if(startTime < this.lastAsyncRecordsTime){
-            return
-          }
-          this.lastAsyncRecordsTime = startTime
-          this.asyncRecords = data
-          this.loading = false
-        },
-        (error) => {
-          this.loading = false
-        }
-      )
-    })
+    let filter
+    filter = new AsyncDebounceFilter(
+      (records) => {
+        this.asyncRecords = records
+        this.loading = filter.hasPending()
+      },
+      () => {
+        this.loading = filter.hasPending()
+      },
+    )
+    this.asyncRecordsFilter = filter
   },
   watch: {
     modelValue: {
@@ -144,10 +139,10 @@ export default {
       }else{
         wait = defaultAsyncWait(this.inputValue)
       }
-      this.asyncRecordsFunction.call({
+      this.asyncRecordsFilter.run(
+        () => this.autocomplete(this.inputValue),
         wait,
-        arguments: [this.inputValue],
-      })
+      )
       this.loading = true
     },
     onKeydownUp(e){

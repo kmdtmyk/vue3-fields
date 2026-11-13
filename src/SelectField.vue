@@ -46,7 +46,7 @@ import DropdownList from './DropdownList.vue'
 import Arrays from './Arrays'
 import Strings from './Strings'
 import VueProps from './VueProps'
-import DebounceFunction from './DebounceFunction'
+import AsyncDebounceFilter from './AsyncDebounceFilter'
 import defaultAsyncWait from './defaultAsyncWait'
 
 
@@ -78,6 +78,20 @@ const asyncRecords = ref<Array<any> | null>(null)
 const localValue = ref<any>(null)
 const inputValue = ref<string>('')
 const selectedRecord = ref<any>(null)
+
+let asyncRecordsFilter: AsyncDebounceFilter<any> | null = null
+if(VueProps.isAsyncFunction(props.records)){
+  const records = props.records as (...args: any[]) => Promise<any[]>
+  asyncRecordsFilter = new AsyncDebounceFilter(
+    (records) => {
+      asyncRecords.value = records
+      loading.value = asyncRecordsFilter?.hasPending() ?? false
+    },
+    () => {
+      loading.value = asyncRecordsFilter?.hasPending() ?? false
+    },
+  )
+}
 
 
 watch(modelValue, (value) => {
@@ -132,32 +146,8 @@ const isEmpty = computed(() => {
   return Strings.isEmpty(localValue.value)
 })
 
-const asyncRecordsFunction = computed(() => {
-  if(props.records instanceof Function === false || VueProps.isAsyncFunction(props.records) === false){
-    return null
-  }
-  const records = props.records
-  let lastAsyncRecordsTime = 0
-  return new DebounceFunction((query: any) => {
-    const startTime = Date.now()
-    return records(query).then(
-      (data: any) => {
-        if(startTime < lastAsyncRecordsTime){
-          return
-        }
-        lastAsyncRecordsTime = startTime
-        asyncRecords.value = data
-        loading.value = false
-      },
-      (error: any) => {
-        loading.value = false
-      }
-    )
-  })
-})
-
 const isAsync = computed(() => {
-  return VueProps.isAsyncFunction(props.records)
+  return asyncRecordsFilter != null
 })
 
 const dropdownInput = ref<InstanceType<typeof DropdownInput>>()
@@ -186,13 +176,11 @@ const callAsyncRecords = () => {
   }else{
     wait = _asyncWait
   }
-  if(asyncRecordsFunction.value == null){
+  if(asyncRecordsFilter == null){
     return
   }
-  asyncRecordsFunction.value.call({
-    wait,
-    arguments: [inputValue.value],
-  })
+  const records = props.records as (...args: any[]) => Promise<any[]>
+  asyncRecordsFilter.run(() => records(inputValue.value), wait)
   loading.value = true
 }
 
