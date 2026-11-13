@@ -1,7 +1,7 @@
 export default class{
 
-  static isAsyncFunction(prop: any){
-    if(prop instanceof Function === false){
+  static isAsyncFunction(prop: unknown): prop is (...args: any[]) => Promise<any>{
+    if(typeof prop !== 'function'){
       return false
     }
     if(prop.constructor.name === 'AsyncFunction'){
