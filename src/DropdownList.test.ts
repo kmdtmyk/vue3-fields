@@ -68,6 +68,20 @@ describe('DropdownList', () => {
     expect(wrapper.find('.dropdown-list').exists()).toBe(false)
   })
 
+  test('renders the empty slot when records is empty', () => {
+    const wrapper = mount(Component, {
+      props: {
+        records: [],
+      },
+      slots: {
+        empty: 'No records',
+      },
+    })
+
+    expect(wrapper.find('.dropdown-list').exists()).toBe(true)
+    expect(wrapper.find('.dropdown-list-item.empty').text()).toBe('No records')
+  })
+
   test('does not render when records is null', () => {
     const wrapper = mount(Component, {
       props: {
