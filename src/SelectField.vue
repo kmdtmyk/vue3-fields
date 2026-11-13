@@ -201,8 +201,7 @@ const onKeydownEnter = (e: Event) => {
 }
 
 const onKeydownDelete = (e: KeyboardEvent) => {
-  const target = e.target as HTMLInputElement
-  if(target != null && target.value === '' && modelValue.value != null){
+  if(e.target instanceof HTMLInputElement && e.target.value === '' && modelValue.value != null){
     clear()
   }
 }
