@@ -15,7 +15,8 @@ p v-model:record: {{record}}
 
 <script lang='ts' setup>
 import { ref } from 'vue'
-import SelectField from '../../../src/SelectField.vue'
+import SelectField from '@/src/SelectField.vue'
+import sleep from '@/demo/sleep'
 
 const items = [
   {id: 1, name: 'item1'},
@@ -29,9 +30,5 @@ const record = ref(null)
 const records = async () => {
   await sleep(300)
   return items
-}
-
-const sleep = (time: number) => {
-  return new Promise((resolve) => setTimeout(resolve, time))
 }
 </script>

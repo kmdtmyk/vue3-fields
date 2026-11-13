@@ -8,16 +8,12 @@ SelectField(
 </template>
 
 <script lang='ts' setup>
-import SelectField from '../../../src/SelectField.vue'
-
-const languages = ['C', 'Java', 'C++', 'Python', 'JavaScript', 'Perl', 'PHP', 'Rust', 'Go', 'Ruby', 'Swift', 'Kotlin']
+import SelectField from '@/src/SelectField.vue'
+import {languages} from '@/demo/data'
+import sleep from '@/demo/sleep'
 
 const records = async () => {
   await sleep(300)
   return languages
-}
-
-const sleep = (time: number) => {
-  return new Promise((resolve) => setTimeout(resolve, time))
 }
 </script>
