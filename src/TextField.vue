@@ -1,6 +1,5 @@
 <template lang='pug'>
 DropdownInput(
-  ref='input'
   v-model='inputValue'
   v-bind='$attrs'
   type='text'
@@ -24,7 +23,6 @@ DropdownInput(
 import DropdownInput from './DropdownInput.vue'
 import DropdownList from './DropdownList.vue'
 import Arrays from './Arrays'
-import Strings from './Strings'
 import VueProps from './VueProps'
 import AsyncDebounceFilter from './AsyncDebounceFilter'
 import defaultAsyncWait from './defaultAsyncWait'
@@ -81,12 +79,6 @@ export default {
     },
   },
   computed: {
-    // listeners(){
-    //   return {
-    //     ...this.$listeners,
-    //     input: this.input,
-    //   }
-    // },
     autocompleteAttribute(){
       if(this.useDropdown){
         return 'off'
@@ -105,7 +97,6 @@ export default {
         return this.asyncRecords
       }
 
-      let array
       if(this.autocomplete instanceof Function){
         return this.autocomplete(this.inputValue)
       }else{
@@ -117,12 +108,12 @@ export default {
     },
   },
   methods: {
-    onFocus(e){
+    onFocus(){
       if(this.isAsync === true && Arrays.isNullOrEmpty(this.asyncRecords)){
         this.callAsyncRecords()
       }
     },
-    onInput(e){
+    onInput(){
       if(this.isAsync === true){
         this.callAsyncRecords()
       }
@@ -181,9 +172,6 @@ export default {
         e.preventDefault()
       }
     },
-    input(e){
-      this.$emit('input', e)
-    },
     select(record){
       this.inputValue = record
       this.$emit('update:modelValue', record)
@@ -191,6 +179,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-</style>

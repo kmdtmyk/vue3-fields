@@ -81,7 +81,6 @@ const selectedRecord = ref<any>(null)
 
 let asyncRecordsFilter: AsyncDebounceFilter<any> | null = null
 if(VueProps.isAsyncFunction(props.records)){
-  const records = props.records as (...args: any[]) => Promise<any[]>
   asyncRecordsFilter = new AsyncDebounceFilter(
     (records) => {
       asyncRecords.value = records
