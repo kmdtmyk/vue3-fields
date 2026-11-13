@@ -59,7 +59,7 @@ const modelValue = defineModel()
 const props = defineProps<{
   name?: string
   required?: boolean | string
-  records?: Array<Object> | Function
+  records?: Array<any> | ((query: string) => Array<any> | Promise<Array<any>>)
   record?: Object
   recordKey?: string
   asyncWait?: number | Function
@@ -125,7 +125,7 @@ const dropdownRecords = computed(() => {
   if(isAsync.value === true){
     return asyncRecords.value
   }else if(props.records instanceof Function){
-    return props.records(inputValue)
+    return props.records(inputValue.value)
   }else if(Array.isArray(props.records)){
     return Arrays.search(props.records, inputValue.value)
   }
