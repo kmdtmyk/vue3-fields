@@ -160,10 +160,10 @@ const isAsync = computed(() => {
   return VueProps.isAsyncFunction(props.records)
 })
 
-const dropdownInput = ref<typeof DropdownInput>()
+const dropdownInput = ref<InstanceType<typeof DropdownInput>>()
 
 const onFocus = (e: Event) => {
-  const input = dropdownInput.value?.input as HTMLInputElement
+  const input = dropdownInput.value?.input
   if(input?.readOnly === true){
     // TODO: test code
     inputValue.value = placeholder.value
