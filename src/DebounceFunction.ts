@@ -17,7 +17,7 @@ export default class{
    * @param func 実行する関数
    * @param wait 実行まで待機する時間[ms]
    */
-  call(func: DebouncedFunction, wait: number): void{
+  runAfter(func: DebouncedFunction, wait: number): void{
     if(this.timeoutID != null){
       this.cancel()
     }

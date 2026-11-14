@@ -22,7 +22,7 @@ export default class<T>{
   }
 
   run(func: () => Promise<T>, wait: number): void{
-    this.debounce.call(
+    this.debounce.runAfter(
       () => this.filter.run(func).catch(this.onError),
       wait,
     )

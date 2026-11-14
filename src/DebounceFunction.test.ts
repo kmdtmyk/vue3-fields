@@ -11,7 +11,7 @@ describe('DebounceFunction', () => {
     const func = vi.fn()
     const debounce = new DebounceFunction()
 
-    debounce.call(func, 0)
+    debounce.runAfter(func, 0)
 
     expect(func).toHaveBeenCalledOnce()
   })
@@ -21,7 +21,7 @@ describe('DebounceFunction', () => {
     const func = vi.fn()
     const debounce = new DebounceFunction()
 
-    debounce.call(func, 100)
+    debounce.runAfter(func, 100)
 
     expect(func).not.toHaveBeenCalled()
     vi.advanceTimersByTime(99)
@@ -36,8 +36,8 @@ describe('DebounceFunction', () => {
     const second = vi.fn()
     const debounce = new DebounceFunction()
 
-    debounce.call(first, 100)
-    debounce.call(second, 100)
+    debounce.runAfter(first, 100)
+    debounce.runAfter(second, 100)
     vi.advanceTimersByTime(100)
 
     expect(first).not.toHaveBeenCalled()
@@ -49,7 +49,7 @@ describe('DebounceFunction', () => {
     const func = vi.fn()
     const debounce = new DebounceFunction()
 
-    debounce.call(func, 100)
+    debounce.runAfter(func, 100)
     debounce.cancel()
     vi.advanceTimersByTime(100)
 
@@ -61,7 +61,7 @@ describe('DebounceFunction', () => {
     const debounce = new DebounceFunction()
 
     expect(debounce.isWaiting()).toBe(false)
-    debounce.call(() => {}, 100)
+    debounce.runAfter(() => {}, 100)
     expect(debounce.isWaiting()).toBe(true)
 
     vi.advanceTimersByTime(100)
@@ -72,7 +72,7 @@ describe('DebounceFunction', () => {
     const argument = vi.fn()
     const debounce = new DebounceFunction()
 
-    debounce.call(() => argument(), 0)
+    debounce.runAfter(() => argument(), 0)
 
     expect(argument).toHaveBeenCalledOnce()
   })
@@ -84,7 +84,7 @@ describe('DebounceFunction', () => {
     })
     const debounce = new DebounceFunction()
 
-    debounce.call(async () => promise, 0)
+    debounce.runAfter(async () => promise, 0)
     expect(debounce.getExecutingCount()).toBe(1)
 
     resolve()
@@ -96,7 +96,7 @@ describe('DebounceFunction', () => {
     const debounce = new DebounceFunction()
 
     expect(() => {
-      debounce.call(() => {
+      debounce.runAfter(() => {
         throw new Error('failed')
       }, 0)
     }).toThrow('failed')
