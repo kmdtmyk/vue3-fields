@@ -10,27 +10,35 @@ export default class{
 
   private timeoutID: ReturnType<typeof setTimeout> | null = null
   private executingCount = 0
+  private pendingResolve: (() => void) | null = null
 
   /**
    * 関数を実行する。waitが0以下の場合はすぐに実行する。
+   * 実行完了時にresolveし、エラー発生時にrejectするPromiseを返す。
    *
    * @param func 実行する関数
    * @param wait 実行まで待機する時間[ms]
    */
-  runAfter(func: DebouncedFunction, wait: number): void{
+  runAfter(func: DebouncedFunction, wait: number): Promise<void>{
     if(this.timeoutID != null){
       this.cancel()
     }
 
-    if(wait <= 0){
-      this.execute(func)
-      return
-    }
+    return new Promise<void>((resolve, reject) => {
+      this.pendingResolve = resolve
 
-    this.timeoutID = setTimeout(() => {
-      this.timeoutID = null
-      this.execute(func)
-    }, wait)
+      const execute = () => {
+        this.timeoutID = null
+        this.pendingResolve = null
+        this.execute(func).then(resolve, reject)
+      }
+
+      if(wait <= 0){
+        execute()
+      }else{
+        this.timeoutID = setTimeout(execute, wait)
+      }
+    })
 
   }
 
@@ -40,6 +48,8 @@ export default class{
     }
     clearTimeout(this.timeoutID)
     this.timeoutID = null
+    this.pendingResolve?.()
+    this.pendingResolve = null
   }
 
   /**
@@ -57,27 +67,28 @@ export default class{
     return this.executingCount
   }
 
-  private execute(func: DebouncedFunction): void{
+  private execute(func: DebouncedFunction): Promise<void>{
     this.executingCount += 1
 
-    let result
+    let result: void | PromiseLike<unknown>
     try{
       result = func()
     }catch(error){
       this.executingCount -= 1
-      throw error
+      return Promise.reject(error)
     }
     if(result == null){
       this.executingCount -= 1
-      return
+      return Promise.resolve()
     }
 
-    result.then(
+    return Promise.resolve(result).then(
       () => {
         this.executingCount -= 1
       },
-      () => {
+      (error) => {
         this.executingCount -= 1
+        throw error
       },
     )
   }
