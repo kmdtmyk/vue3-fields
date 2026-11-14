@@ -27,8 +27,10 @@ const items = [
 const value = ref(null)
 const record = ref(null)
 
-const records = async () => {
+const records = async (q: string) => {
   await sleep(300)
-  return items
+  return items.filter(item => {
+    return item.name.toLowerCase().includes(q.toLowerCase())
+  })
 }
 </script>
