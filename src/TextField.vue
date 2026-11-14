@@ -40,12 +40,12 @@ const modelValue = defineModel<string>()
 const inputValue = ref('')
 
 const recordsSource = isRecordsSource<string>(props.autocomplete) ? props.autocomplete : null
-const autocompleteRecords = useSearchRecords(recordsSource, props.asyncWait)
 
 const {
   records: dropdownRecords,
   loading,
-} = autocompleteRecords
+  search: searchDropdownRecords,
+} = useSearchRecords(recordsSource, props.asyncWait)
 
 
 const autocompleteAttribute = computed(() => {
@@ -67,13 +67,13 @@ watch(modelValue, (value) => {
 
 const onFocus = () => {
   if(dropdownRecords.value == null){
-    autocompleteRecords.search(inputValue.value)
+    searchDropdownRecords(inputValue.value)
   }
 }
 
 const onInput = () => {
   modelValue.value = inputValue.value
-  autocompleteRecords.search(inputValue.value)
+  searchDropdownRecords(inputValue.value)
 }
 
 const dropdown = ref<InstanceType<typeof DropdownList> | null>(null)
