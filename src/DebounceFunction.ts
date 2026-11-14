@@ -1,14 +1,14 @@
-type DebouncedFunction = (...args: unknown[]) => void | PromiseLike<unknown>
+type DebouncedFunction<Arguments extends unknown[]> = (...args: Arguments) => void | PromiseLike<unknown>
 
-export default class{
+export default class<Arguments extends unknown[] = unknown[]>{
 
   private timeoutID: ReturnType<typeof setTimeout> | null = null
   private executingCount = 0
 
-  constructor(private readonly func: DebouncedFunction){
+  constructor(private readonly func: DebouncedFunction<Arguments>){
   }
 
-  call(option: {wait: number, arguments: unknown[]}): void{
+  call(option: {wait: number, arguments: Arguments}): void{
 
     const {wait} = option
 
@@ -51,7 +51,7 @@ export default class{
     return this.executingCount
   }
 
-  private execute(arguments_: unknown[]): void{
+  private execute(arguments_: Arguments): void{
     this.executingCount += 1
 
     let result

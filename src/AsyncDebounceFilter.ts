@@ -10,7 +10,7 @@ import DebounceFunction from './DebounceFunction'
  */
 export default class<T>{
 
-  private readonly debounce: DebounceFunction
+  private readonly debounce: DebounceFunction<[() => Promise<T>]>
   private readonly filter: AsyncFilter<T>
 
   constructor(
