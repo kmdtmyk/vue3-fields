@@ -16,6 +16,15 @@ describe('DebounceFunction', () => {
     expect(func).toHaveBeenCalledOnce()
   })
 
+  test('treats a negative wait as zero',  () => {
+    const func = vi.fn()
+    const debounce = new DebounceFunction()
+
+    debounce.runAfter(func, -100)
+
+    expect(func).toHaveBeenCalledOnce()
+  })
+
   test('executes after the specified wait', () => {
     vi.useFakeTimers()
     const func = vi.fn()
