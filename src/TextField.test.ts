@@ -59,6 +59,7 @@ describe('autocomplete', () => {
       },
     })
     const input = wrapper.find('input[type=text]')
+    expect(input.attributes('autocomplete')).toBe('off')
     await input.trigger('focus')
     const items = wrapper.findAll('.dropdown-list-item')
     expect(items.length).toEqual(2)
@@ -75,6 +76,7 @@ describe('autocomplete', () => {
       },
     })
     const input = wrapper.find('input[type=text]')
+    expect(input.attributes('autocomplete')).toBe('off')
     await input.trigger('focus')
     expect(func).toHaveBeenCalledOnce()
     expect(func).toHaveBeenCalledWith('')
@@ -109,6 +111,7 @@ describe('autocomplete', () => {
       },
     })
     const input = wrapper.find('input[type=text]')
+    expect(input.attributes('autocomplete')).toBe('off')
     await input.trigger('focus')
     await input.setValue('foo1')
     // focus時と入力時で2回呼ばれる
