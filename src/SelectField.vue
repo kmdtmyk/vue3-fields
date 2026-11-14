@@ -142,11 +142,18 @@ const onInput = (e: Event) => {
 const dropdown = ref<InstanceType<typeof DropdownList> | null>(null)
 
 const onKeydownUp = async (e: Event) => {
-  await nextTick()
+  if(dropdown.value == null){
+    return
+  }
+  e.preventDefault()
   dropdown.value?.up()
 }
 
 const onKeydownDown = (e: Event) => {
+  if(dropdown.value == null){
+    return
+  }
+  e.preventDefault()
   dropdown.value?.down()
 }
 
