@@ -319,6 +319,30 @@ describe('records', () => {
     expect(queries).toEqual(['', 'a'])
   })
 
+  test('searches again on focus when the previous result was empty', async () => {
+    const queries: string[] = []
+    const func = async (query: string) => {
+      queries.push(query)
+      return []
+    }
+    const wrapper = mount(Component, {
+      props: {
+        records: func,
+        asyncWait: 0,
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+
+    await input.trigger('focus')
+    await input.setValue('a')
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    await input.trigger('blur')
+    // 空だったらここで再検索する
+    await input.trigger('focus')
+
+    expect(queries).toEqual(['', 'a', ''])
+  })
+
 })
 
 describe('keydown', () => {

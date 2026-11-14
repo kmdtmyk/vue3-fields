@@ -126,7 +126,7 @@ const onFocus = (e: Event) => {
   if(input?.readOnly === true){
     // TODO: test code
     inputValue.value = placeholder.value
-  }else if(dropdownRecords.value == null){
+  }else if(dropdownRecords.value == null || dropdownRecords.value.length === 0){
     searchRecords(inputValue.value)
   }
 }
