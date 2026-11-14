@@ -52,4 +52,27 @@ describe('AsyncFilter', () => {
     expect(filter.hasPending()).toBe(false)
   })
 
+  test('removes a request when the function throws synchronously', async () => {
+    const filter = new AsyncFilter(() => {})
+
+    const result = filter.run(() => {
+      throw new Error('failed')
+    })
+
+    await expect(result).rejects.toThrow('failed')
+    expect(filter.hasPending()).toBe(false)
+  })
+
+  test('rejects and removes a request when the async function fails', async () => {
+    const filter = new AsyncFilter(() => {})
+    const error = new Error('failed')
+
+    const result = filter.run(async () => {
+      throw error
+    })
+
+    await expect(result).rejects.toBe(error)
+    expect(filter.hasPending()).toBe(false)
+  })
+
 })

@@ -36,7 +36,19 @@ export default class<T>{
     const requestId = ++this.nextRequestId
     this.pendingRequestIds.add(requestId)
 
-    return func().then(
+    let result: Promise<T> | PromiseLike<T>
+    try{
+      result = func()
+    }catch(error){
+      this.pendingRequestIds.delete(requestId)
+      if(requestId < this.lastCompletedRequestId){
+        return Promise.resolve()
+      }
+      this.lastCompletedRequestId = requestId
+      return Promise.reject(error)
+    }
+
+    return Promise.resolve(result).then(
       (value) => {
         this.pendingRequestIds.delete(requestId)
         if(requestId < this.lastCompletedRequestId){

@@ -52,6 +52,12 @@ describe('AsyncDebounceFilter', () => {
     expect(second).toHaveBeenCalledOnce()
   })
 
+  test('returns a promise that resolves when the function completes', async () => {
+    const filter = new AsyncDebounceFilter(() => {})
+
+    await expect(filter.run(async () => [], 0)).resolves.toBeUndefined()
+  })
+
   test('ignores an older result when a newer result completes first', async () => {
     const first = deferred<string>()
     const second = deferred<string>()

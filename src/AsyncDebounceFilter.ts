@@ -21,8 +21,8 @@ export default class<T>{
     this.debounce = new DebounceFunction()
   }
 
-  run(func: () => Promise<T>, wait: number): void{
-    this.debounce.runAfter(
+  run(func: () => Promise<T>, wait: number): Promise<void>{
+    return this.debounce.runAfter(
       () => this.filter.run(func).catch(this.onError),
       wait,
     )
