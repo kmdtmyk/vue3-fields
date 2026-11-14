@@ -142,19 +142,15 @@ const onInput = (e: Event) => {
 const dropdown = ref<InstanceType<typeof DropdownList> | null>(null)
 
 const onKeydownUp = async (e: Event) => {
-  if(dropdown.value == null){
-    return
+  if(dropdown.value?.up() === true){
+    e.preventDefault()
   }
-  e.preventDefault()
-  dropdown.value?.up()
 }
 
 const onKeydownDown = (e: Event) => {
-  if(dropdown.value == null){
-    return
+  if(dropdown.value?.down() === true){
+    e.preventDefault()
   }
-  e.preventDefault()
-  dropdown.value?.down()
 }
 
 const onKeydownEnter = (e: Event) => {

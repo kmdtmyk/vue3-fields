@@ -50,11 +50,11 @@ describe('DropdownList', () => {
     })
     const dropdown = wrapper.findComponent(Component).vm
 
-    dropdown.down()
+    expect(dropdown.down()).toBe(true)
     await nextTick()
     expect(wrapper.find('.selected').text()).toBe('bar')
 
-    dropdown.up()
+    expect(dropdown.up()).toBe(true)
     await nextTick()
     expect(wrapper.find('.selected').text()).toBe('foo')
   })
@@ -104,6 +104,8 @@ describe('DropdownList', () => {
     const dropdown = wrapper.findComponent(Component).vm
 
     expect(wrapper.find('.dropdown-list').exists()).toBe(false)
+    expect(dropdown.up()).toBe(false)
+    expect(dropdown.down()).toBe(false)
     expect(dropdown.select()).toBe(false)
   })
 

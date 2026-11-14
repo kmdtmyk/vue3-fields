@@ -32,29 +32,31 @@ const selectedIndex = ref(0)
 
 const emits = defineEmits(['input'])
 
-const up = () => {
+const up = (): boolean => {
   if(records == null || records.length === 0){
-    return
+    return false
   }
   const current = selectedIndex.value
   const next = current - 1
   const {length} = records
   selectedIndex.value = (next + length) % length
   autoScroll()
+  return true
 }
 
-const down = () => {
+const down = (): boolean => {
   if(records == null || records.length === 0){
-    return
+    return false
   }
   const current = selectedIndex.value
   const next = current === null ? 0 : current + 1
   const {length} = records
   selectedIndex.value = (next + length) % length
   autoScroll()
+  return true
 }
 
-const select = () => {
+const select = (): boolean => {
   if(records == null){
     return false
   }

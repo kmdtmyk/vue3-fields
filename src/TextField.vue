@@ -79,26 +79,19 @@ const onInput = () => {
 const dropdown = ref<InstanceType<typeof DropdownList> | null>(null)
 
 const onKeydownUp = (event: KeyboardEvent) => {
-  if(dropdown.value == null){
-    return
+  if(dropdown.value?.up() === true){
+    event.preventDefault()
   }
-  event.preventDefault()
-  dropdown.value?.up()
 }
 
 const onKeydownDown = (event: KeyboardEvent) => {
-  if(dropdown.value == null){
-    return
+  if(dropdown.value?.down() === true){
+    event.preventDefault()
   }
-  event.preventDefault()
-  dropdown.value?.down()
 }
 
 const onKeydownEnter = (event: KeyboardEvent) => {
-  if(dropdown.value == null){
-    return
-  }
-  if(dropdown.value.select() === true){
+  if(dropdown.value?.select() === true){
     event.preventDefault()
   }
 }
