@@ -13,19 +13,17 @@ DropdownInput(
 )
   DropdownList(
     ref='dropdown'
-    v-if='useDropdown'
+    v-if='dropdownRecords != null'
     :records='dropdownRecords'
     @input='select'
   )
 </template>
 
 <script lang='ts' setup>
-import {computed, nextTick, ref, watch} from 'vue'
+import {computed, ref, watch} from 'vue'
 import DropdownInput from './DropdownInput.vue'
 import DropdownList from './DropdownList.vue'
-import Arrays from './Arrays'
-import VueProps from './VueProps'
-import useAsyncRecords from './useAsyncRecords'
+import useRecords, {isRecordsSource} from './useRecords'
 
 defineOptions({
   inheritAttrs: false,
@@ -40,20 +38,14 @@ const modelValue = defineModel<string>()
 
 const inputValue = ref('')
 
-const autocomplete = props.autocomplete
-const asyncRecordsFunction = VueProps.isAsyncFunction(autocomplete) ? autocomplete : null
-const syncRecordsFunction = VueProps.isSyncFunction(autocomplete) ? autocomplete : null
-const arrayRecords = Array.isArray(autocomplete) ? autocomplete : null
-
-const useDropdown = computed(() => {
-  return arrayRecords != null || syncRecordsFunction != null || asyncRecordsFunction != null
-})
+const recordsSource = isRecordsSource<string>(props.autocomplete) ? props.autocomplete : null
+const autocompleteRecords = useRecords(recordsSource, props.asyncWait)
 
 const {
-  records: asyncRecords,
+  records: dropdownRecords,
   loading,
-  run: runAsyncRecords,
-} = useAsyncRecords(asyncRecordsFunction, props.asyncWait)
+} = autocompleteRecords
+
 
 const autocompleteAttribute = computed(() => {
   if(Array.isArray(props.autocomplete) || typeof props.autocomplete === 'function'){
@@ -68,42 +60,25 @@ const autocompleteAttribute = computed(() => {
   return props.autocomplete
 })
 
-const dropdownRecords = computed(() => {
-  if(asyncRecordsFunction != null){
-    return asyncRecords.value ?? []
-  }else if(syncRecordsFunction != null){
-    return syncRecordsFunction(inputValue.value)
-  }else if(arrayRecords != null){
-    return Arrays.search(arrayRecords, inputValue.value)
-  }
-  return null
-})
-
 watch(modelValue, (value) => {
   inputValue.value = value ?? ''
 }, {immediate: true})
 
 const onFocus = () => {
-  if(asyncRecordsFunction != null && Arrays.isNullOrEmpty(asyncRecords.value)){
-    callAsyncRecords()
+  if(dropdownRecords.value == null){
+    autocompleteRecords.run(inputValue.value)
   }
 }
 
 const onInput = () => {
   modelValue.value = inputValue.value
-  if(asyncRecordsFunction != null){
-    callAsyncRecords()
-  }
-}
-
-const callAsyncRecords = () => {
-  runAsyncRecords(inputValue.value)
+  autocompleteRecords.run(inputValue.value)
 }
 
 const dropdown = ref<InstanceType<typeof DropdownList> | null>(null)
 
 const onKeydownUp = (event: KeyboardEvent) => {
-  if(!useDropdown.value){
+  if(dropdown.value == null){
     return
   }
   event.preventDefault()
@@ -111,7 +86,7 @@ const onKeydownUp = (event: KeyboardEvent) => {
 }
 
 const onKeydownDown = (event: KeyboardEvent) => {
-  if(!useDropdown.value){
+  if(dropdown.value == null){
     return
   }
   event.preventDefault()
@@ -119,7 +94,7 @@ const onKeydownDown = (event: KeyboardEvent) => {
 }
 
 const onKeydownEnter = (event: KeyboardEvent) => {
-  if(!useDropdown.value || dropdown.value == null){
+  if(dropdown.value == null){
     return
   }
   if(dropdown.value.select() === true){
