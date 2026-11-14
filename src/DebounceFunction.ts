@@ -1,29 +1,23 @@
-type DebouncedFunction<Arguments extends unknown[]> = (...args: Arguments) => void | PromiseLike<unknown>
+type DebouncedFunction = () => void | PromiseLike<unknown>
 
-export default class<Arguments extends unknown[] = unknown[]>{
+export default class{
 
   private timeoutID: ReturnType<typeof setTimeout> | null = null
   private executingCount = 0
 
-  constructor(private readonly func: DebouncedFunction<Arguments>){
-  }
-
-  call(option: {wait: number, arguments: Arguments}): void{
-
-    const {wait} = option
-
+  call(func: DebouncedFunction, wait: number): void{
     if(this.timeoutID != null){
       this.cancel()
     }
 
     if(wait <= 0){
-      this.execute(option.arguments)
+      this.execute(func)
       return
     }
 
     this.timeoutID = setTimeout(() => {
       this.timeoutID = null
-      this.execute(option.arguments)
+      this.execute(func)
     }, wait)
 
   }
@@ -51,12 +45,12 @@ export default class<Arguments extends unknown[] = unknown[]>{
     return this.executingCount
   }
 
-  private execute(arguments_: Arguments): void{
+  private execute(func: DebouncedFunction): void{
     this.executingCount += 1
 
     let result
     try{
-      result = this.func(...arguments_)
+      result = func()
     }catch(error){
       this.executingCount -= 1
       throw error

@@ -9,64 +9,47 @@ describe('DebounceFunction', () => {
 
   test('executes immediately when wait is zero or less', () => {
     const func = vi.fn()
-    const debounce = new DebounceFunction(func)
+    const debounce = new DebounceFunction()
 
-    debounce.call({
-      wait: 0,
-      arguments: ['foo', 1],
-    })
+    debounce.call(func, 0)
 
     expect(func).toHaveBeenCalledOnce()
-    expect(func).toHaveBeenCalledWith('foo', 1)
   })
 
   test('executes after the specified wait', () => {
     vi.useFakeTimers()
     const func = vi.fn()
-    const debounce = new DebounceFunction(func)
+    const debounce = new DebounceFunction()
 
-    debounce.call({
-      wait: 100,
-      arguments: ['foo'],
-    })
+    debounce.call(func, 100)
 
     expect(func).not.toHaveBeenCalled()
     vi.advanceTimersByTime(99)
     expect(func).not.toHaveBeenCalled()
     vi.advanceTimersByTime(1)
     expect(func).toHaveBeenCalledOnce()
-    expect(func).toHaveBeenCalledWith('foo')
   })
 
   test('cancels the previous call when called again', () => {
     vi.useFakeTimers()
-    const func = vi.fn()
-    const debounce = new DebounceFunction(func)
+    const first = vi.fn()
+    const second = vi.fn()
+    const debounce = new DebounceFunction()
 
-    debounce.call({
-      wait: 100,
-      arguments: ['first'],
-    })
-    debounce.call({
-      wait: 100,
-      arguments: ['second'],
-    })
-
+    debounce.call(first, 100)
+    debounce.call(second, 100)
     vi.advanceTimersByTime(100)
 
-    expect(func).toHaveBeenCalledOnce()
-    expect(func).toHaveBeenCalledWith('second')
+    expect(first).not.toHaveBeenCalled()
+    expect(second).toHaveBeenCalledOnce()
   })
 
   test('cancel prevents a pending call from executing', () => {
     vi.useFakeTimers()
     const func = vi.fn()
-    const debounce = new DebounceFunction(func)
+    const debounce = new DebounceFunction()
 
-    debounce.call({
-      wait: 100,
-      arguments: ['foo'],
-    })
+    debounce.call(func, 100)
     debounce.cancel()
     vi.advanceTimersByTime(100)
 
@@ -75,17 +58,23 @@ describe('DebounceFunction', () => {
 
   test('isWaiting reports whether a call is waiting', () => {
     vi.useFakeTimers()
-    const debounce = new DebounceFunction(() => {})
+    const debounce = new DebounceFunction()
 
     expect(debounce.isWaiting()).toBe(false)
-    debounce.call({
-      wait: 100,
-      arguments: [],
-    })
+    debounce.call(() => {}, 100)
     expect(debounce.isWaiting()).toBe(true)
 
     vi.advanceTimersByTime(100)
     expect(debounce.isWaiting()).toBe(false)
+  })
+
+  test('executes a function passed to call', () => {
+    const argument = vi.fn()
+    const debounce = new DebounceFunction()
+
+    debounce.call(() => argument(), 0)
+
+    expect(argument).toHaveBeenCalledOnce()
   })
 
   test('tracks executing promises and removes them when completed', async () => {
@@ -93,12 +82,9 @@ describe('DebounceFunction', () => {
     const promise = new Promise<void>((resolvePromise) => {
       resolve = resolvePromise
     })
-    const debounce = new DebounceFunction(async () => promise)
+    const debounce = new DebounceFunction()
 
-    debounce.call({
-      wait: 0,
-      arguments: [],
-    })
+    debounce.call(async () => promise, 0)
     expect(debounce.getExecutingCount()).toBe(1)
 
     resolve()
@@ -107,15 +93,12 @@ describe('DebounceFunction', () => {
   })
 
   test('clears executing count when the function throws synchronously', () => {
-    const debounce = new DebounceFunction(() => {
-      throw new Error('failed')
-    })
+    const debounce = new DebounceFunction()
 
     expect(() => {
-      debounce.call({
-        wait: 0,
-        arguments: [],
-      })
+      debounce.call(() => {
+        throw new Error('failed')
+      }, 0)
     }).toThrow('failed')
     expect(debounce.getExecutingCount()).toBe(0)
   })

@@ -10,7 +10,7 @@ import DebounceFunction from './DebounceFunction'
  */
 export default class<T>{
 
-  private readonly debounce: DebounceFunction<[() => Promise<T>]>
+  private readonly debounce: DebounceFunction
   private readonly filter: AsyncFilter<T>
 
   constructor(
@@ -18,16 +18,14 @@ export default class<T>{
     private readonly onError: (error: unknown) => void = () => {},
   ){
     this.filter = new AsyncFilter(onResult)
-    this.debounce = new DebounceFunction((func: () => Promise<T>) => {
-      return this.filter.run(func).catch(this.onError)
-    })
+    this.debounce = new DebounceFunction()
   }
 
   run(func: () => Promise<T>, wait: number): void{
-    this.debounce.call({
+    this.debounce.call(
+      () => this.filter.run(func).catch(this.onError),
       wait,
-      arguments: [func],
-    })
+    )
   }
 
   hasPending(): boolean{
