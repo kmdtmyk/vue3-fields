@@ -10,7 +10,10 @@ SelectField(
 <script lang='ts' setup>
 import SelectField from '@/src/SelectField.vue'
 
-const languages = ['C', 'Java', 'C++', 'Python', 'JavaScript', 'Perl', 'PHP', 'Rust', 'Go', 'Ruby', 'Swift', 'Kotlin']
+const languages = [
+  'C', 'Java', 'C++', 'Python', 'JavaScript', 'Perl', 'PHP', 'Rust', 'Go', 'Ruby', 'Swift', 'Kotlin',
+  'C#', 'TypeScript', 'R', 'Dart', 'Scala', 'Haskell', 'Lua', 'Objective-C', 'Visual Basic', 'Fortran', 'COBOL', 'SQL',
+]
 
 const records = (q: string) => {
   return languages.filter(language => {
