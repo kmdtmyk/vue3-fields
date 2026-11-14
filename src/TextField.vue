@@ -56,10 +56,16 @@ const {
 } = useAsyncRecords(asyncRecordsFunction, props.asyncWait)
 
 const autocompleteAttribute = computed(() => {
-  if(useDropdown.value){
+  if(Array.isArray(props.autocomplete) || typeof props.autocomplete === 'function'){
     return 'off'
   }
-  return VueProps.toOnOff(autocomplete)
+  if(props.autocomplete === true){
+    return 'on'
+  }
+  if(props.autocomplete === false){
+    return 'off'
+  }
+  return props.autocomplete
 })
 
 const dropdownRecords = computed(() => {

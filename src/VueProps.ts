@@ -14,14 +14,4 @@ export default class{
     return typeof prop === 'function' && this.isAsyncFunction(prop) === false
   }
 
-  static toOnOff(prop: any): 'on' | 'off' | null {
-    if(prop === true || prop === 'on'){
-      return 'on'
-    }
-    if(prop === false || prop === 'off'){
-      return 'off'
-    }
-    return null
-  }
-
 }
