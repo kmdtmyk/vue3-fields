@@ -33,14 +33,29 @@ const isSyncFunction = <T>(value: unknown): value is (query: string) => T[] => {
   return typeof value === 'function' && value.constructor.name !== 'AsyncFunction'
 }
 
+/**
+ * SelectFieldやTextFieldのpropsで以下の3通りを受け付けるようにしている、これを扱うためのcomposable
+ * - 配列
+ * - 配列を返す同期関数
+ * - 配列を返す非同期関数
+ *
+ * @param source
+ * @param debounceTime
+ * @returns
+ */
 export default function useSearchRecords<T>(
   source: RecordsSource<T> | null | undefined,
   debounceTime: DebounceTime | undefined,
 ){
+  // asyncあり
   const asyncFunction = isAsyncFunction<T>(source) ? source : null
+  // asyncなし
   const syncFunction = isSyncFunction<T>(source) ? source : null
-  const records = ref<T[] | null>(null)
+  // 直接配列が渡された時用
   const arrayRecords = Array.isArray(source) ? source : null
+  // 検索結果保存用、検索実行前だとnull
+  const records = ref<T[] | null>(null)
+  // 読み込み中のやつを表示するのに使う
   const loading = ref(false)
 
   let asyncDebounceFilter: AsyncDebounceFilter<T[]> | null = null
