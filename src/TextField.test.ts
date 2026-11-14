@@ -115,6 +115,28 @@ describe('autocomplete', () => {
     expect(queries).toEqual(['foo', 'foo1'])
   })
 
+  test('非同期の結果取得後はfocus時に再実行しない', async () => {
+    let callCount = 0
+    const func = async () => {
+      callCount += 1
+      return ['foo']
+    }
+    const wrapper = mount(Component, {
+      props: {
+        autocomplete: func,
+        asyncWait: 0,
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+
+    await input.trigger('focus')
+    expect(callCount).toBe(1)
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    await input.trigger('blur')
+    await input.trigger('focus')
+    expect(callCount).toBe(1)
+  })
+
 })
 
 describe('@input', () => {
