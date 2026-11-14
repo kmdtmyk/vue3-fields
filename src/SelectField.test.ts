@@ -309,7 +309,7 @@ describe('records', () => {
     const wrapper = mount(Component, {
       props: {
         records: func,
-        asyncWait: 0,
+        debounceTime: 0,
       },
     })
     const input = wrapper.find('input[type=text]')
@@ -328,7 +328,7 @@ describe('records', () => {
     const wrapper = mount(Component, {
       props: {
         records: func,
-        asyncWait: 0,
+        debounceTime: 0,
       },
     })
     const input = wrapper.find('input[type=text]')

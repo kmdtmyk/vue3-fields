@@ -123,7 +123,7 @@ describe('autocomplete', () => {
       props: {
         modelValue: 'foo',
         autocomplete: func,
-        asyncWait: 0,
+        debounceTime: 0,
       },
     })
     const input = wrapper.find('input[type=text]')
@@ -143,7 +143,7 @@ describe('autocomplete', () => {
     const wrapper = mount(Component, {
       props: {
         autocomplete: func,
-        asyncWait: 0,
+        debounceTime: 0,
       },
     })
     const input = wrapper.find('input[type=text]')

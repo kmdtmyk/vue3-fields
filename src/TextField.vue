@@ -24,7 +24,7 @@ import {computed, ref, watch} from 'vue'
 import DropdownInput from './DropdownInput.vue'
 import DropdownList from './DropdownList.vue'
 import useSearchRecords, {isRecordsSource} from './useSearchRecords'
-import type {AsyncWait} from './useSearchRecords'
+import type {DebounceTime} from './useSearchRecords'
 
 defineOptions({
   inheritAttrs: false,
@@ -32,7 +32,7 @@ defineOptions({
 
 const props = defineProps<{
   autocomplete?: string | boolean | string[] | ((query: string) => string[] | Promise<string[]>)
-  asyncWait?: AsyncWait
+  debounceTime?: DebounceTime
 }>()
 
 const modelValue = defineModel<string>()
@@ -45,7 +45,7 @@ const {
   records: dropdownRecords,
   loading,
   search: searchDropdownRecords,
-} = useSearchRecords(recordsSource, props.asyncWait)
+} = useSearchRecords(recordsSource, props.debounceTime)
 
 
 const autocompleteAttribute = computed(() => {

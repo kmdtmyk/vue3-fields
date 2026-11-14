@@ -45,7 +45,7 @@ import DropdownList from './DropdownList.vue'
 import Arrays from './Arrays'
 import Strings from './Strings'
 import useSearchRecords, {isRecordsSource} from './useSearchRecords'
-import type {AsyncWait} from './useSearchRecords'
+import type {DebounceTime} from './useSearchRecords'
 
 
 defineOptions({
@@ -60,7 +60,7 @@ const props = defineProps<{
   records?: Array<any> | ((query: string) => Array<any> | Promise<Array<any>>)
   record?: Object
   recordKey?: string
-  asyncWait?: AsyncWait
+  debounceTime?: DebounceTime
   dropdownStyle?: string | Object
   placeholder?: string
 }>()
@@ -81,7 +81,7 @@ const {
   loading,
   isAsync,
   search: searchRecords,
-} = useSearchRecords(recordsSource, props.asyncWait)
+} = useSearchRecords(recordsSource, props.debounceTime)
 
 
 watch(modelValue, (value) => {

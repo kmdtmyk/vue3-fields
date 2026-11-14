@@ -1,10 +1,10 @@
 import {ref} from 'vue'
 import Arrays from './Arrays'
 import AsyncDebounceFilter from './AsyncDebounceFilter'
-import defaultAsyncWait from './defaultAsyncWait'
+import defaultDebounceTime from './defaultDebounceTime'
 
 export type RecordsSource<T> = T[] | ((query: string) => T[] | Promise<T[]>)
-export type AsyncWait = number | ((query: string) => number)
+export type DebounceTime = number | ((query: string) => number)
 
 /**
  * このcomposableの引数として使える場合はtrue
@@ -35,7 +35,7 @@ const isSyncFunction = <T>(value: unknown): value is (query: string) => T[] => {
 
 export default function useSearchRecords<T>(
   source: RecordsSource<T> | null | undefined,
-  asyncWait: AsyncWait | undefined,
+  debounceTime: DebounceTime | undefined,
 ){
   const asyncFunction = isAsyncFunction<T>(source) ? source : null
   const syncFunction = isSyncFunction<T>(source) ? source : null
@@ -57,12 +57,12 @@ export default function useSearchRecords<T>(
     }
 
     let wait
-    if(asyncWait instanceof Function){
-      wait = asyncWait(query)
-    }else if(asyncWait != null){
-      wait = asyncWait
+    if(debounceTime instanceof Function){
+      wait = debounceTime(query)
+    }else if(debounceTime != null){
+      wait = debounceTime
     }else{
-      wait = defaultAsyncWait(query)
+      wait = defaultDebounceTime(query)
     }
 
     asyncDebounceFilter.run(() => asyncFunction(query), wait).catch(() => {
