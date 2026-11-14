@@ -93,7 +93,7 @@ watch(modelValue, (value) => {
       selectedRecord.value = null
       return
     }
-    selectedRecord.value = Arrays.from(recordsSource).find(record => {
+    selectedRecord.value = Arrays.from<Record<string, unknown>>(recordsSource).find(record => {
       return record[recordKey] === value
     })
   }
