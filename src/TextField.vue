@@ -66,13 +66,13 @@ watch(modelValue, (value) => {
 
 const onFocus = () => {
   if(dropdownRecords.value == null){
-    autocompleteRecords.run(inputValue.value)
+    autocompleteRecords.call(inputValue.value)
   }
 }
 
 const onInput = () => {
   modelValue.value = inputValue.value
-  autocompleteRecords.run(inputValue.value)
+  autocompleteRecords.call(inputValue.value)
 }
 
 const dropdown = ref<InstanceType<typeof DropdownList> | null>(null)
