@@ -133,5 +133,22 @@ describe('attribute' , () => {
     expect(inputs[0].attributes('disabled')).toEqual('')
   })
 
+  test('input(type=hidden)で効果がない属性は無視される', () => {
+    const wrapper = mount(Component, {
+      props: {
+        value: {
+          id: 1,
+        },
+        readonly: true,
+        required: true,
+        placeholder: 'foo',
+      },
+    })
+    const input = wrapper.find('input[type="hidden"]')
+    expect(input.attributes('readonly')).toBeUndefined()
+    expect(input.attributes('required')).toBeUndefined()
+    expect(input.attributes('placeholder')).toBeUndefined()
+  })
+
 })
 

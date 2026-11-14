@@ -2,10 +2,10 @@
 <template lang='pug'>
 input(
   v-for='attribute in attributes'
-  v-bind='$attrs'
   type='hidden'
   :name='attribute.name'
   :value='normalizeValue(attribute.value)'
+  :disabled='props.disabled'
 )
 </template>
 
@@ -16,6 +16,7 @@ import extractValue from './extractValue'
 const props = defineProps<{
   name?: string
   value: unknown
+  disabled?: boolean
 }>()
 
 const attributes = computed(() => {
