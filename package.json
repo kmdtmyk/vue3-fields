@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "TZ=Asia/Tokyo vitest",
+    "build:demo": "vite build",
     "start": "vite"
   },
   "repository": {

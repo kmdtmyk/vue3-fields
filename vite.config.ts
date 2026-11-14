@@ -4,6 +4,7 @@ import {fileURLToPath, URL} from 'node:url'
 
 export default defineConfig({
   root: 'demo',
+  base: './',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./', import.meta.url)),
