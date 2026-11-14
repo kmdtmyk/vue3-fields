@@ -45,6 +45,7 @@ import DropdownList from './DropdownList.vue'
 import Arrays from './Arrays'
 import Strings from './Strings'
 import useSearchRecords, {isRecordsSource} from './useSearchRecords'
+import type {AsyncWait} from './useSearchRecords'
 
 
 defineOptions({
@@ -59,7 +60,7 @@ const props = defineProps<{
   records?: Array<any> | ((query: string) => Array<any> | Promise<Array<any>>)
   record?: Object
   recordKey?: string
-  asyncWait?: number | ((query: string) => number)
+  asyncWait?: AsyncWait
   dropdownStyle?: string | Object
   placeholder?: string
 }>()

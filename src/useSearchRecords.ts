@@ -4,7 +4,7 @@ import AsyncDebounceFilter from './AsyncDebounceFilter'
 import defaultAsyncWait from './defaultAsyncWait'
 
 export type RecordsSource<T> = T[] | ((query: string) => T[] | Promise<T[]>)
-type AsyncWait = number | ((query: string) => number)
+export type AsyncWait = number | ((query: string) => number)
 
 /**
  * このcomposableの引数として使える場合はtrue
