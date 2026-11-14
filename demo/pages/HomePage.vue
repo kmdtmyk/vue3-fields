@@ -14,6 +14,7 @@ const router = useRouter()
 const pages = computed(() => {
   return router.getRoutes()
     .filter(route => route.path !== '/')
+    .sort((left, right) => left.path.localeCompare(right.path))
     .map(route => ({
       path: route.path,
       title: route.path === '/' ? 'Home' : route.path.slice(1),
