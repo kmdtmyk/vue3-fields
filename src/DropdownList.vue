@@ -25,7 +25,7 @@ import {ref} from 'vue'
 import DropdownListItem from './DropdownListItem.vue'
 
 const {records} = defineProps<{
-  records: any[] | null
+  records: unknown[] | null
 }>()
 
 const selectedIndex = ref(0)

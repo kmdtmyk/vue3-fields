@@ -1,6 +1,6 @@
 
 
-const extractValue = (name: string, value: any): Array<{name: string, value: any}> => {
+const extractValue = (name: string, value: unknown): Array<{name: string, value: unknown}> => {
   if(Array.isArray(value)){
     return value.flatMap((value, index) => {
       if(isObject(value)){
@@ -38,7 +38,7 @@ const joinNames = (...names: Array<string>): string => {
     }).join('')
 }
 
-const isObject = (value: any): boolean => {
+const isObject = (value: unknown): value is Record<string, unknown> => {
   return value != null && typeof value === 'object'
 }
 

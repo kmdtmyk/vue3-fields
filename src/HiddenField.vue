@@ -15,14 +15,14 @@ import extractValue from './extractValue'
 
 const props = defineProps<{
   name?: string
-  value: any
+  value: unknown
 }>()
 
 const attributes = computed(() => {
   return extractValue(props.name ?? '', props.value)
 })
 
-const normalizeValue = (value: any) => {
+const normalizeValue = (value: unknown) => {
   if(value == null){
     return ''
   }

@@ -2,7 +2,7 @@ import Strings from './Strings'
 
 export default class{
 
-  static from(arrayLike: any): Array<any>{
+  static from<T>(arrayLike: unknown): T[]{
     if(Array.isArray(arrayLike)){
       return arrayLike
     }
@@ -14,7 +14,7 @@ export default class{
     return []
   }
 
-  static isNullOrEmpty(array: Array<any> | null | undefined): boolean{
+  static isNullOrEmpty<T>(array: T[] | null | undefined): boolean{
     if(array == null){
       return true
     }

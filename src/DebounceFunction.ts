@@ -1,4 +1,4 @@
-type DebouncedFunction = (...args: any[]) => void | PromiseLike<unknown>
+type DebouncedFunction = (...args: unknown[]) => void | PromiseLike<unknown>
 
 export default class{
 
@@ -8,7 +8,7 @@ export default class{
   constructor(private readonly func: DebouncedFunction){
   }
 
-  call(option: {wait: number, arguments: any[]}): void{
+  call(option: {wait: number, arguments: unknown[]}): void{
 
     const {wait} = option
 
@@ -51,7 +51,7 @@ export default class{
     return this.executingCount
   }
 
-  private execute(arguments_: any[]): void{
+  private execute(arguments_: unknown[]): void{
     this.executingCount += 1
 
     let result
