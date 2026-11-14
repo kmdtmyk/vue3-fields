@@ -4,7 +4,7 @@ DropdownInput(
   v-bind='$attrs'
   type='text'
   :autocomplete='autocompleteAttribute'
-  :loading='loading || $attrs.loading'
+  :loading='loading'
   @input='onInput'
   @keydown.up='onKeydownUp'
   @keydown.down='onKeydownDown'
