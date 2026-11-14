@@ -1,10 +1,22 @@
 type DebouncedFunction = () => void | PromiseLike<unknown>
 
+/**
+ * 関数の実行を遅延し、待機中に再度呼び出された場合は
+ * 前回の実行予定を取り消して、最後に渡された関数だけを実行する。
+ *
+ * 実行する関数がPromiseを返す場合は、完了するまで実行中として扱う。
+ */
 export default class{
 
   private timeoutID: ReturnType<typeof setTimeout> | null = null
   private executingCount = 0
 
+  /**
+   * 関数を実行する。waitが0以下の場合はすぐに実行する。
+   *
+   * @param func 実行する関数
+   * @param wait 実行まで待機する時間[ms]
+   */
   call(func: DebouncedFunction, wait: number): void{
     if(this.timeoutID != null){
       this.cancel()
