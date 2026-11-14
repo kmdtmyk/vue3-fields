@@ -10,16 +10,10 @@ SelectField(
 <script lang='ts' setup>
 import SelectField from '@/src/SelectField.vue'
 import sleep from '@/demo/sleep'
-
-const languages = [
-  'C', 'Java', 'C++', 'Python', 'JavaScript', 'Perl', 'PHP', 'Rust', 'Go', 'Ruby', 'Swift', 'Kotlin',
-  'C#', 'TypeScript', 'R', 'Dart', 'Scala', 'Haskell', 'Lua', 'Objective-C', 'Visual Basic', 'Fortran', 'COBOL', 'SQL',
-]
+import ProgrammingLanguage from '@/demo/data/ProgrammingLanguage'
 
 const records = async (q: string) => {
   await sleep(300)
-  return languages.filter(language => {
-    return language.toLowerCase().includes(q.toLowerCase())
-  })
+  return ProgrammingLanguage.search(q)
 }
 </script>
