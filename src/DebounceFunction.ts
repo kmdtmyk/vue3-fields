@@ -24,8 +24,6 @@ export default class{
       this.cancel()
     }
 
-    const delay = Math.max(0, wait)
-
     return new Promise<void>((resolve, reject) => {
       this.pendingResolve = resolve
 
@@ -35,10 +33,10 @@ export default class{
         this.execute(func).then(resolve, reject)
       }
 
-      if(delay === 0){
+      if(wait <= 0){
         execute()
       }else{
-        this.timeoutID = setTimeout(execute, delay)
+        this.timeoutID = setTimeout(execute, wait)
       }
     })
 
