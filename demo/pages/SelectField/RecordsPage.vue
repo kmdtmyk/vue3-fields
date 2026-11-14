@@ -9,8 +9,8 @@ SelectField(
   template(v-slot='{record}') {{record.id}}: {{record.name}}
   template(#empty)
     i Not found
-p v-model: {{value}}
-p v-model:record: {{record}}
+p v-model: {{JSON.stringify(value)}}
+p v-model:record: {{JSON.stringify(record)}}
 </template>
 
 <script lang='ts' setup>
