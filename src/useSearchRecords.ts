@@ -77,8 +77,7 @@ export default function useSearchRecords<T>(
   const callSyncRecords = (query: string) => {
     if(syncFunction != null){
       records.value = syncFunction(query)
-    }
-    if(Array.isArray(arrayRecords)){
+    }else if(Array.isArray(arrayRecords)){
       records.value = Arrays.search(arrayRecords, query)
     }
   }
