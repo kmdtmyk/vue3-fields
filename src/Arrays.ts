@@ -21,7 +21,7 @@ export default class{
     return array.length === 0
   }
 
-  static search(array: Array<string | Object>, query: string){
+  static search<T>(array: T[], query: string): T[]{
     if(Strings.isEmpty(query)){
       return array
     }
@@ -30,10 +30,10 @@ export default class{
       return words.every(word => {
         if(value instanceof Object){
           return Object.values(value).find(value => {
-            return Strings.includes(value, word, {ignoreCase: true})
+            return Strings.includes(String(value), word, {ignoreCase: true})
           }) != null
         }else{
-          return Strings.includes(value, word, {ignoreCase: true})
+          return Strings.includes(String(value), word, {ignoreCase: true})
         }
       })
     })
