@@ -23,7 +23,7 @@ DropdownInput(
 import {computed, ref, watch} from 'vue'
 import DropdownInput from './DropdownInput.vue'
 import DropdownList from './DropdownList.vue'
-import useRecords, {isRecordsSource} from './useRecords'
+import useSearchRecords, {isRecordsSource} from './useSearchRecords'
 
 defineOptions({
   inheritAttrs: false,
@@ -39,7 +39,7 @@ const modelValue = defineModel<string>()
 const inputValue = ref('')
 
 const recordsSource = isRecordsSource<string>(props.autocomplete) ? props.autocomplete : null
-const autocompleteRecords = useRecords(recordsSource, props.asyncWait)
+const autocompleteRecords = useSearchRecords(recordsSource, props.asyncWait)
 
 const {
   records: dropdownRecords,
@@ -66,13 +66,13 @@ watch(modelValue, (value) => {
 
 const onFocus = () => {
   if(dropdownRecords.value == null){
-    autocompleteRecords.call(inputValue.value)
+    autocompleteRecords.search(inputValue.value)
   }
 }
 
 const onInput = () => {
   modelValue.value = inputValue.value
-  autocompleteRecords.call(inputValue.value)
+  autocompleteRecords.search(inputValue.value)
 }
 
 const dropdown = ref<InstanceType<typeof DropdownList> | null>(null)

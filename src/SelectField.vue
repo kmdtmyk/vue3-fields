@@ -44,7 +44,7 @@ import DropdownInput from './DropdownInput.vue'
 import DropdownList from './DropdownList.vue'
 import Arrays from './Arrays'
 import Strings from './Strings'
-import useRecords, {isRecordsSource} from './useRecords'
+import useSearchRecords, {isRecordsSource} from './useSearchRecords'
 
 
 defineOptions({
@@ -79,8 +79,8 @@ const {
   records: dropdownRecords,
   loading,
   isAsync,
-  call: callRecords,
-} = useRecords(recordsSource, props.asyncWait)
+  search: searchRecords,
+} = useSearchRecords(recordsSource, props.asyncWait)
 
 
 watch(modelValue, (value) => {
@@ -126,7 +126,7 @@ const onFocus = (e: Event) => {
     // TODO: test code
     inputValue.value = placeholder.value
   }else if(dropdownRecords.value == null){
-    callRecords(inputValue.value)
+    searchRecords(inputValue.value)
   }
 }
 
@@ -135,7 +135,7 @@ const onBlur = (e: Event) => {
 }
 
 const onInput = (e: Event) => {
-  callRecords(inputValue.value)
+  searchRecords(inputValue.value)
 }
 
 const dropdown = ref<InstanceType<typeof DropdownList> | null>(null)

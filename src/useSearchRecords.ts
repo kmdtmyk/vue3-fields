@@ -33,17 +33,14 @@ const isSyncFunction = <T>(value: unknown): value is (query: string) => T[] => {
   return typeof value === 'function' && value.constructor.name !== 'AsyncFunction'
 }
 
-export default function useRecords<T>(
+export default function useSearchRecords<T>(
   source: RecordsSource<T> | null | undefined,
   asyncWait: AsyncWait | undefined,
 ){
-
   const asyncFunction = isAsyncFunction<T>(source) ? source : null
   const syncFunction = isSyncFunction<T>(source) ? source : null
   const records = ref<T[] | null>(null)
-
   const arrayRecords = Array.isArray(source) ? source : null
-
   const loading = ref(false)
 
   let asyncDebounceFilter: AsyncDebounceFilter<T[]> | null = null
@@ -86,7 +83,7 @@ export default function useRecords<T>(
     }
   }
 
-  const call = (query: string) => {
+  const search = (query: string) => {
     if(asyncFunction != null){
       callAsyncRecords(query)
     }else{
@@ -98,6 +95,6 @@ export default function useRecords<T>(
     isAsync: asyncFunction != null,
     records,
     loading,
-    call,
+    search,
   }
 }
