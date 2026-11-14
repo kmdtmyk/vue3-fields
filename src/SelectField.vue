@@ -39,13 +39,12 @@ input(
 </template>
 
 <script lang='ts' setup>
-import {computed, nextTick, ref, useAttrs, useSlots, watch} from 'vue'
+import {computed, nextTick, ref, useSlots, watch} from 'vue'
 import DropdownInput from './DropdownInput.vue'
 import DropdownList from './DropdownList.vue'
 import Arrays from './Arrays'
 import Strings from './Strings'
-import VueProps from './VueProps'
-import useAsyncRecords from './useAsyncRecords'
+import useRecords, {isRecordsSource} from './useRecords'
 
 
 defineOptions({
@@ -75,27 +74,25 @@ const localValue = ref<any>(null)
 const inputValue = ref<string>('')
 const selectedRecord = ref<any>(null)
 
-const records = props.records
-const asyncRecordsFunction = VueProps.isAsyncFunction(records) ? records : null
-const syncRecordsFunction = VueProps.isSyncFunction(records) ? records : null
-const arrayRecords = Array.isArray(records) ? records : null
+const recordsSource = isRecordsSource<any>(props.records) ? props.records : null
 const {
-  records: asyncRecords,
+  records: dropdownRecords,
   loading,
-  run: runAsyncRecords,
-} = useAsyncRecords(asyncRecordsFunction, props.asyncWait)
+  isAsync,
+  call: callRecords,
+} = useRecords(recordsSource, props.asyncWait)
 
 
 watch(modelValue, (value) => {
   localValue.value = value
   const {recordKey} = props
 
-  if(recordKey != null && asyncRecordsFunction == null){
+  if(recordKey != null && isAsync === false){
     if(value == null){
       selectedRecord.value = null
       return
     }
-    selectedRecord.value = Arrays.from(records).find(record => {
+    selectedRecord.value = Arrays.from(recordsSource).find(record => {
       return record[recordKey] === value
     })
   }
@@ -106,17 +103,6 @@ watch(() => props.record, (value) => {
     selectedRecord.value = value
   }
 }, {immediate: true})
-
-const dropdownRecords = computed(() => {
-  if(asyncRecordsFunction != null){
-    return asyncRecords.value
-  }else if(syncRecordsFunction != null){
-    return syncRecordsFunction(inputValue.value)
-  }else if(arrayRecords != null){
-    return Arrays.search(arrayRecords, inputValue.value)
-  }
-  return null
-})
 
 const placeholder = computed(() => {
   if(selectedRecord.value != null){
@@ -139,19 +125,17 @@ const onFocus = (e: Event) => {
   if(input?.readOnly === true){
     // TODO: test code
     inputValue.value = placeholder.value
-  }else if(asyncRecordsFunction != null && Arrays.isNullOrEmpty(asyncRecords.value)){
-    callAsyncRecords()
+  }else if(dropdownRecords.value == null){
+    callRecords(inputValue.value)
   }
+}
+
+const onBlur = (e: Event) => {
+  inputValue.value = ''
 }
 
 const onInput = (e: Event) => {
-  if(asyncRecordsFunction != null){
-    callAsyncRecords()
-  }
-}
-
-const callAsyncRecords = () => {
-  runAsyncRecords(inputValue.value)
+  callRecords(inputValue.value)
 }
 
 const dropdown = ref<InstanceType<typeof DropdownList> | null>(null)
@@ -175,10 +159,6 @@ const onKeydownDelete = (e: KeyboardEvent) => {
   if(e.target instanceof HTMLInputElement && e.target.value === '' && modelValue.value != null){
     clear()
   }
-}
-
-const onBlur = (e: Event) => {
-  inputValue.value = ''
 }
 
 const clear = () => {

@@ -95,6 +95,7 @@ export default function useRecords<T>(
   }
 
   return {
+    isAsync: asyncFunction != null,
     records,
     loading,
     call,
