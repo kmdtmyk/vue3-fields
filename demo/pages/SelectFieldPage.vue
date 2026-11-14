@@ -12,7 +12,9 @@ import SelectField from '@/src/SelectField.vue'
 
 const languages = ['C', 'Java', 'C++', 'Python', 'JavaScript', 'Perl', 'PHP', 'Rust', 'Go', 'Ruby', 'Swift', 'Kotlin']
 
-const records = () => {
-  return languages
+const records = (q: string) => {
+  return languages.filter(language => {
+    return language.toLowerCase().includes(q.toLowerCase())
+  })
 }
 </script>
