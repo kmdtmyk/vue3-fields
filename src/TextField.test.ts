@@ -52,6 +52,22 @@ describe('type', () => {
 
 describe('autocomplete', () => {
 
+  test.each([
+    ['on', 'on'],
+    ['off', 'off'],
+    [true, 'on'],
+    [false, 'off'],
+    ['email', 'email'],
+  ])('autocomplete = %s', (autocomplete, expected) => {
+    const wrapper = mount(Component, {
+      props: {
+        autocomplete,
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    expect(input.attributes('autocomplete')).toBe(expected)
+  })
+
   test('array', async () => {
     const wrapper = mount(Component, {
       props: {
