@@ -320,3 +320,56 @@ describe('records', () => {
   })
 
 })
+
+describe('keydown', () => {
+
+  test('prevents default for ArrowUp when dropdown exists', async () => {
+    const wrapper = mount(Component, {
+      props: {
+        records: ['foo'],
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    await input.trigger('focus')
+
+    const event = new KeyboardEvent('keydown', {
+      key: 'ArrowUp',
+      cancelable: true,
+    })
+    input.element.dispatchEvent(event)
+
+    expect(event.defaultPrevented).toBe(true)
+  })
+
+  test('prevents default for ArrowDown when dropdown exists', async () => {
+    const wrapper = mount(Component, {
+      props: {
+        records: ['foo'],
+      },
+    })
+    const input = wrapper.find('input[type=text]')
+    await input.trigger('focus')
+
+    const event = new KeyboardEvent('keydown', {
+      key: 'ArrowDown',
+      cancelable: true,
+    })
+    input.element.dispatchEvent(event)
+
+    expect(event.defaultPrevented).toBe(true)
+  })
+
+  test.each(['ArrowUp', 'ArrowDown'])('does not prevent default for %s when dropdown does not exist', (key) => {
+    const wrapper = mount(Component)
+    const input = wrapper.find('input[type=text]')
+    const event = new KeyboardEvent('keydown', {
+      key,
+      cancelable: true,
+    })
+
+    input.element.dispatchEvent(event)
+
+    expect(event.defaultPrevented).toBe(false)
+  })
+
+})
