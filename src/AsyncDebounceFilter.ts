@@ -13,19 +13,13 @@ export default class<T>{
   private readonly debounce: DebounceFunction
   private readonly filter: AsyncFilter<T>
 
-  constructor(
-    private readonly onResult: (result: T) => void,
-    private readonly onError: (error: unknown) => void = () => {},
-  ){
+  constructor(private readonly onResult: (result: T) => void){
     this.filter = new AsyncFilter(onResult)
     this.debounce = new DebounceFunction()
   }
 
   run(func: () => Promise<T>, wait: number): Promise<void>{
-    return this.debounce.runAfter(
-      () => this.filter.run(func).catch(this.onError),
-      wait,
-    )
+    return this.debounce.runAfter(() => this.filter.run(func), wait)
   }
 
   hasPending(): boolean{

@@ -45,15 +45,10 @@ export default function useSearchRecords<T>(
 
   let asyncDebounceFilter: AsyncDebounceFilter<T[]> | null = null
   if(asyncFunction != null){
-    asyncDebounceFilter = new AsyncDebounceFilter(
-      (value) => {
-        records.value = value
-        loading.value = asyncDebounceFilter?.hasPending() ?? false
-      },
-      () => {
-        loading.value = asyncDebounceFilter?.hasPending() ?? false
-      },
-    )
+    asyncDebounceFilter = new AsyncDebounceFilter((value) => {
+      records.value = value
+      loading.value = asyncDebounceFilter?.hasPending() ?? false
+    })
   }
 
   const callAsyncRecords = (query: string) => {
@@ -70,7 +65,9 @@ export default function useSearchRecords<T>(
       wait = defaultAsyncWait(query)
     }
 
-    asyncDebounceFilter.run(() => asyncFunction(query), wait)
+    asyncDebounceFilter.run(() => asyncFunction(query), wait).catch(() => {
+      loading.value = asyncDebounceFilter?.hasPending() ?? false
+    })
     loading.value = true
   }
 

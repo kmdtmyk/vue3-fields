@@ -58,6 +58,17 @@ describe('AsyncDebounceFilter', () => {
     await expect(filter.run(async () => [], 0)).resolves.toBeUndefined()
   })
 
+  test('rejects when the function fails', async () => {
+    const error = new Error('failed')
+    const filter = new AsyncDebounceFilter(() => {})
+
+    const result = filter.run(async () => {
+      throw error
+    }, 0)
+
+    await expect(result).rejects.toBe(error)
+  })
+
   test('ignores an older result when a newer result completes first', async () => {
     const first = deferred<string>()
     const second = deferred<string>()
