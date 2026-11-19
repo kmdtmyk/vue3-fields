@@ -1,19 +1,22 @@
 import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
-import {fileURLToPath, URL} from 'node:url'
 
 export default defineConfig({
-  root: 'demo',
-  base: './',
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./', import.meta.url)),
+  plugins: [vue()],
+  build: {
+    lib: {
+      entry: 'src/index.ts',
+      name: 'Vue3Fields',
+      fileName: 'vue3-fields',
+      formats: ['es', 'cjs'],
+    },
+    rollupOptions: {
+      external: ['vue'],
+      output: {
+        globals: {
+          vue: 'Vue',
+        },
+      },
     },
   },
-  server: {
-    host: '0.0.0.0',
-  },
-  plugins: [
-    vue(),
-  ],
 })

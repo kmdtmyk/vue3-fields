@@ -14,10 +14,10 @@
   },
   "scripts": {
     "test": "TZ=Asia/Tokyo vitest",
-    "build": "vite build --config vite.lib.config.ts",
-    "build:demo": "vite build",
+    "build": "vite build",
+    "build:demo": "vite build --config vite.demo.config.ts",
     "prepare": "npm run build",
-    "start": "vite"
+    "start": "vite --config vite.demo.config.ts"
   },
   "repository": {
     "type": "git",
