@@ -1,5 +1,5 @@
 import {ref} from 'vue'
-import Arrays from './Arrays'
+import {search as searchArray} from './array/search'
 import AsyncDebounceFilter from './AsyncDebounceFilter'
 import defaultDebounceTime from './defaultDebounceTime'
 
@@ -90,7 +90,7 @@ export default function useSearchRecords<T>(
     if(syncFunction != null){
       records.value = syncFunction(query)
     }else if(Array.isArray(arrayRecords)){
-      records.value = Arrays.search(arrayRecords, query)
+      records.value = searchArray(arrayRecords, query)
     }
   }
 

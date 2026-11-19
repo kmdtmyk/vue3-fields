@@ -42,8 +42,9 @@ input(
 import {computed, nextTick, ref, useSlots, watch} from 'vue'
 import DropdownInput from './DropdownInput.vue'
 import DropdownList from './DropdownList.vue'
-import Arrays from './Arrays'
-import Strings from './Strings'
+import {from} from './array/from'
+import {isEmpty as isStringEmpty} from './string/isEmpty'
+import {isNotEmpty} from './string/isNotEmpty'
 import useSearchRecords, {isRecordsSource} from './useSearchRecords'
 import type {DebounceTime} from './useSearchRecords'
 
@@ -93,7 +94,7 @@ watch(modelValue, (value) => {
       selectedRecord.value = null
       return
     }
-    selectedRecord.value = Arrays.from<Record<string, unknown>>(recordsSource).find(record => {
+    selectedRecord.value = from<Record<string, unknown>>(recordsSource).find(record => {
       return record[recordKey] === value
     })
   }
@@ -109,14 +110,14 @@ const placeholder = computed(() => {
   if(selectedRecord.value != null){
     return recordText(selectedRecord.value)
   }
-  if(Strings.isNotEmpty(localValue.value)){
+  if(isNotEmpty(localValue.value)){
     return localValue.value
   }
   return props.placeholder
 })
 
 const isEmpty = computed(() => {
-  return Strings.isEmpty(localValue.value)
+  return isStringEmpty(localValue.value)
 })
 
 const dropdownInput = ref<InstanceType<typeof DropdownInput>>()
