@@ -42,7 +42,7 @@ input(
 import {computed, nextTick, ref, useSlots, watch} from 'vue'
 import DropdownInput from './DropdownInput.vue'
 import DropdownList from './DropdownList.vue'
-import {from} from './array/from'
+import {toArray} from './array/toArray'
 import {isEmpty as isStringEmpty} from './string/isEmpty'
 import {isNotEmpty} from './string/isNotEmpty'
 import useSearchRecords, {isRecordsSource} from './useSearchRecords'
@@ -94,7 +94,7 @@ watch(modelValue, (value) => {
       selectedRecord.value = null
       return
     }
-    selectedRecord.value = from<Record<string, unknown>>(recordsSource).find(record => {
+    selectedRecord.value = toArray<Record<string, unknown>>(recordsSource).find(record => {
       return record[recordKey] === value
     })
   }
