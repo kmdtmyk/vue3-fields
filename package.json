@@ -2,10 +2,21 @@
   "name": "vue3-fields",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "main": "./dist/vue3-fields.cjs",
+  "module": "./dist/vue3-fields.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./dist/vue3-fields.js",
+      "require": "./dist/vue3-fields.cjs"
+    }
+  },
   "scripts": {
     "test": "TZ=Asia/Tokyo vitest",
+    "build": "vite build --config vite.lib.config.ts",
     "build:demo": "vite build",
+    "prepare": "npm run build",
     "start": "vite"
   },
   "repository": {
@@ -20,6 +31,7 @@
   "homepage": "https://github.com/kmdtmyk/vue3-fields#readme",
   "description": "",
   "files": [
+    "dist/",
     "src/"
   ],
   "devDependencies": {
