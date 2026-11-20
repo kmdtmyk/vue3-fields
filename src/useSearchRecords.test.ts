@@ -1,4 +1,4 @@
-import {describe, expect, test} from 'vitest'
+import {describe, expect, test, vi} from 'vitest'
 import useSearchRecords, {isRecordsSource} from './useSearchRecords'
 
 describe('isRecordsSource', () => {
@@ -54,6 +54,28 @@ describe('useSearchRecords', () => {
     resolve(['foo'])
     await new Promise((resolve) => setTimeout(resolve, 0))
 
+    expect(result.records.value).toEqual(['foo'])
+    expect(result.loading.value).toBe(false)
+  })
+
+  test('searches with a function that returns a Promise without async', async () => {
+    let resolve!: (records: string[]) => void
+    const promise = new Promise<string[]>((resolvePromise) => {
+      resolve = resolvePromise
+    })
+    const records = vi.fn(() => promise)
+    const result = useSearchRecords(records, 0)
+
+    result.search('foo')
+    expect(records).toHaveBeenCalledOnce()
+    expect(result.isAsync).toBe(false)
+    expect(result.loading.value).toBe(true)
+    expect(result.records.value).toBeNull()
+
+    resolve(['foo'])
+    await new Promise((resolvePromise) => setTimeout(resolvePromise, 0))
+
+    expect(records).toHaveBeenCalledOnce()
     expect(result.records.value).toEqual(['foo'])
     expect(result.loading.value).toBe(false)
   })

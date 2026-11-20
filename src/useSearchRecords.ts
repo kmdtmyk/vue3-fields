@@ -15,97 +15,58 @@ export const isRecordsSource = <T>(value: unknown): value is RecordsSource<T> =>
   return Array.isArray(value) || typeof value === 'function'
 }
 
-/**
- * 非同期関数だとtrue
- * @param value
- * @returns
- */
-const isAsyncFunction = <T>(value: unknown): value is (query: string) => Promise<T[]> => {
-  return typeof value === 'function' && value.constructor.name === 'AsyncFunction'
-}
-
-/**
- * 非同期でない関数だとtrue
- * @param value
- * @returns
- */
-const isSyncFunction = <T>(value: unknown): value is (query: string) => T[] => {
-  return typeof value === 'function' && value.constructor.name !== 'AsyncFunction'
-}
-
-/**
- * SelectFieldやTextFieldのpropsで以下の3通りを受け付けるようにしている、これを扱うためのcomposable
- * - 配列
- * - 配列を返す同期関数
- * - 配列を返す非同期関数
- *
- * @param source
- * @param debounceTime
- * @returns
- */
+/** SelectFieldとTextFieldで、配列・検索関数から候補を取得する。 */
 export default function useSearchRecords<T>(
   source: RecordsSource<T> | null | undefined,
   debounceTime: DebounceTime | undefined,
 ){
-  // asyncあり
-  const asyncFunction = isAsyncFunction<T>(source) ? source : null
-  // asyncなし
-  const syncFunction = isSyncFunction<T>(source) ? source : null
-  // 直接配列が渡された時用
-  const arrayRecords = Array.isArray(source) ? source : null
-  // 検索結果保存用、検索実行前だとnull
+  // nullは検索前、空配列は検索結果なしを表す。
   const records = ref<T[] | null>(null)
-  // 読み込み中のやつを表示するのに使う
   const loading = ref(false)
 
-  let asyncDebounceFilter: AsyncDebounceFilter<T[]> | null = null
-  if(asyncFunction != null){
-    asyncDebounceFilter = new AsyncDebounceFilter((value) => {
-      records.value = value
-      loading.value = asyncDebounceFilter?.hasPending() ?? false
-    })
+  // async宣言のある関数は、呼び出す前からデバウンスできる。
+  const isAsync = typeof source === 'function' && source.constructor.name === 'AsyncFunction'
+
+  const asyncFilter = new AsyncDebounceFilter<T[]>((result) => {
+    records.value = result
+    loading.value = asyncFilter.hasPending()
+  })
+
+  const getDebounceTime = (query: string): number => {
+    if(typeof debounceTime === 'function'){
+      return debounceTime(query)
+    }
+    return debounceTime ?? defaultDebounceTime(query)
   }
 
-  const callAsyncRecords = (query: string) => {
-    if(asyncDebounceFilter == null || asyncFunction == null){
-      return
-    }
-
-    let wait
-    if(debounceTime instanceof Function){
-      wait = debounceTime(query)
-    }else if(debounceTime != null){
-      wait = debounceTime
-    }else{
-      wait = defaultDebounceTime(query)
-    }
-
-    asyncDebounceFilter.run(() => asyncFunction(query), wait).catch(() => {
-      loading.value = asyncDebounceFilter?.hasPending() ?? false
-    })
+  const searchAsync = (query: string, getResult: () => T[] | Promise<T[]>) => {
     loading.value = true
-  }
-
-  const callSyncRecords = (query: string) => {
-    if(syncFunction != null){
-      records.value = syncFunction(query)
-    }else if(Array.isArray(arrayRecords)){
-      records.value = searchArray(arrayRecords, query)
-    }
+    asyncFilter.run(() => Promise.resolve(getResult()), getDebounceTime(query)).catch(() => {
+      loading.value = asyncFilter.hasPending()
+    })
   }
 
   const search = (query: string) => {
-    if(asyncFunction != null){
-      callAsyncRecords(query)
+    if(source == null){
+      return
+    }
+    if(Array.isArray(source)){
+      records.value = searchArray(source, query)
+      return
+    }
+    if(isAsync){
+      searchAsync(query, () => source(query))
+      return
+    }
+
+    const result = source(query)
+    if(Array.isArray(result)){
+      records.value = result
     }else{
-      callSyncRecords(query)
+      // 通常関数が返したPromiseも扱う。関数を二重に呼び出さない。
+      searchAsync(query, () => result)
     }
   }
 
-  return {
-    isAsync: asyncFunction != null,
-    records,
-    loading,
-    search,
-  }
+  return {isAsync, records, loading, search}
 }
